@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 433347906}
   - component: {fileID: 433347908}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Weapon Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -55,8 +55,8 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.01
-  far clip plane: 1000
+  near clip plane: 0.1
+  far clip plane: 512
   field of view: 45
   orthographic: 0
   orthographic size: 5
@@ -86,7 +86,7 @@ GameObject:
   - component: {fileID: 8062193883131752047}
   - component: {fileID: 1430407910}
   - component: {fileID: 8322781128379608116}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
@@ -122,10 +122,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 777447532c613954287e19d34590e557, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sensitivity: 0
-  acceleration: 0
-  maxSpeed: 0
-  gravity: 0
+  Sensitivity: 2
+  WalkSpeed: 8
+  RunSpeed: 16
+  FallSpeed: 32
+  JumpStrength: 12
+  StairSnap: 1
+  CameraInterpolation: 1
+  Acceleration: 0.2
 --- !u!143 &8322781128379608116
 CharacterController:
   m_ObjectHideFlags: 0
@@ -140,10 +144,10 @@ CharacterController:
   m_Height: 2
   m_Radius: 0.5
   m_SlopeLimit: 45
-  m_StepOffset: 0.3
-  m_SkinWidth: 0.08
-  m_MinMoveDistance: 0.001
-  m_Center: {x: 0, y: 0, z: 0}
+  m_StepOffset: 0.5
+  m_SkinWidth: 1
+  m_MinMoveDistance: 0
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &8062193883315120515
 GameObject:
   m_ObjectHideFlags: 0
@@ -154,7 +158,9 @@ GameObject:
   m_Component:
   - component: {fileID: 8062193883315120512}
   - component: {fileID: 8062193883315120513}
-  m_Layer: 0
+  - component: {fileID: 1204815882}
+  - component: {fileID: 1204815883}
+  m_Layer: 6
   m_Name: View Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -199,15 +205,15 @@ Camera:
     y: 0
     width: 1
     height: 1
-  near clip plane: 0.01
-  far clip plane: 1000
-  field of view: 90
+  near clip plane: 0.1
+  far clip plane: 512
+  field of view: 120
   orthographic: 0
   orthographic size: 5
   m_Depth: -100
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 55
+    m_Bits: 2147483647
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -219,3 +225,80 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &1204815882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8062193883315120515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sharedProfile: {fileID: 11400000, guid: f78e4550de4764b4e9820766570426f7, type: 2}
+  isGlobal: 1
+  blendDistance: 0
+  weight: 1
+  priority: 0
+--- !u!114 &1204815883
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8062193883315120515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volumeTrigger: {fileID: 8062193883315120512}
+  volumeLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  stopNaNPropagation: 1
+  finalBlitToCameraTarget: 0
+  antialiasingMode: 3
+  temporalAntialiasing:
+    jitterSpread: 0.8
+    sharpness: 0.2
+    stationaryBlending: 0.8
+    motionBlending: 0.8
+  subpixelMorphologicalAntialiasing:
+    quality: 2
+  fastApproximateAntialiasing:
+    fastMode: 0
+    keepAlpha: 0
+  fog:
+    enabled: 1
+    excludeSkybox: 1
+  debugLayer:
+    lightMeter:
+      width: 512
+      height: 256
+      showCurves: 1
+    histogram:
+      width: 512
+      height: 256
+      channel: 3
+    waveform:
+      exposure: 0.12
+      height: 256
+    vectorscope:
+      size: 256
+      exposure: 0.12
+    overlaySettings:
+      linearDepth: 0
+      motionColorIntensity: 4
+      motionGridSize: 64
+      colorBlindnessType: 0
+      colorBlindnessStrength: 1
+  m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
+  m_ShowToolkit: 0
+  m_ShowCustomSorter: 0
+  breakBeforeColorGrading: 0
+  m_BeforeTransparentBundles: []
+  m_BeforeStackBundles: []
+  m_AfterStackBundles: []

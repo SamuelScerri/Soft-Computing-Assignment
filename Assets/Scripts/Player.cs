@@ -10,10 +10,10 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 	[SerializeField]
-	private byte Sensitivity, Speed, FallSpeed;
+	private byte Sensitivity, WalkSpeed, RunSpeed, FallSpeed, JumpStrength;
 
 	[SerializeField]
-	private bool StairSnap;
+	private bool StairSnap, CameraInterpolation;
 
 	[SerializeField]
 	private float Acceleration;
@@ -23,6 +23,8 @@ public class Player : MonoBehaviour
 	private Vector3 CurrentSpeed;
 	private Vector3 CurrentVelocity;
 	private Vector3 PreviousPosition;
+	private float CameraPosition;
+	private float CameraVelocity;
 
 	private float RotationLimit;
 	private float Gravity;
@@ -33,6 +35,9 @@ public class Player : MonoBehaviour
 	{
 		CC = GetComponent<CharacterController>();
 		Cursor.lockState = CursorLockMode.Locked;
+
+		CameraPosition = Camera.main.transform.position.y;
+		CC.Move(Vector2.down * 512);
 	}
 
 	private void Update()
@@ -44,13 +49,19 @@ public class Player : MonoBehaviour
 		Direction.Normalize();
 
 		//Smooth Damp Will Ensure That The Acceleration Will Be Constant Across Different Framerates
-		CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * Speed, ref CurrentVelocity, Acceleration);
+		if (Input.GetKey(KeyCode.LeftShift) && LastGrounded)
+			CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * RunSpeed, ref CurrentVelocity, Acceleration);
+		else CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * WalkSpeed, ref CurrentVelocity, Acceleration);
+
+
 
 		CC.Move(CurrentSpeed * Time.deltaTime);
 		GravityCheck();
 
 		//This Will Be Used For The Next Gravity Check, More Information Is Given In The Function
 		PreviousPosition = transform.position;
+
+
 	}
 
 	private void GravityCheck()
@@ -65,18 +76,17 @@ public class Player : MonoBehaviour
 				while (PreviousPosition != transform.position)
 				{
 					PreviousPosition = Vector3.MoveTowards(PreviousPosition, transform.position, .1f);
-					if (Physics.Raycast(PreviousPosition, Vector2.down, CC.stepOffset * 2))
-						CC.Move(Vector2.down * 9999);
+					if (Physics.Raycast(PreviousPosition, Vector2.down, CC.stepOffset * 2 + CC.skinWidth))
+						CC.Move(Vector2.down * 512);
 				}
-
-			Gravity = 0;
+			
+			if (Input.GetKeyDown(KeyCode.Space))
+				Gravity = -JumpStrength;
+			else Gravity = 0;
 		}
 
-		else
-		{
-			Gravity = Mathf.MoveTowards(Gravity, FallSpeed * 2, FallSpeed * Time.deltaTime);
-			CC.Move(Vector2.down * Gravity * Time.deltaTime);
-		}
+		Gravity = Mathf.MoveTowards(Gravity, FallSpeed * 2, FallSpeed * Time.deltaTime);
+		CC.Move(Vector2.down * Gravity * Time.deltaTime);
 
 		LastGrounded = CC.isGrounded;
 	}
@@ -89,5 +99,12 @@ public class Player : MonoBehaviour
 		RotationLimit = Mathf.Clamp(RotationLimit, -90, 90);
 
 		Camera.main.transform.localEulerAngles = Vector2.right * RotationLimit;
+
+		//Smooth Camera Movement
+		if (CameraInterpolation)
+		{
+			CameraPosition = Mathf.SmoothDamp(CameraPosition, transform.position.y + 2, ref CameraVelocity, .04f);
+			Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, CameraPosition, Camera.main.transform.position.z);
+		}
 	}
 }
