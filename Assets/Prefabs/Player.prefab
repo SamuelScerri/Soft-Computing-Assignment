@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 777447532c613954287e19d34590e557, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Sensitivity: 2
+  Sensitivity: 1
   WalkSpeed: 8
   RunSpeed: 16
   FallSpeed: 32
@@ -144,8 +144,8 @@ CharacterController:
   m_Height: 2
   m_Radius: 0.5
   m_SlopeLimit: 45
-  m_StepOffset: 0.5
-  m_SkinWidth: 1
+  m_StepOffset: 0.6
+  m_SkinWidth: 0.0001
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 1, z: 0}
 --- !u!1 &8062193883315120515
