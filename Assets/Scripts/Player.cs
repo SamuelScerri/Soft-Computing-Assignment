@@ -50,13 +50,7 @@ public class Player : MonoBehaviour
 		else CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * WalkSpeed, ref CurrentVelocity, Acceleration);
 
 		CC.Move(CurrentSpeed * Time.deltaTime);
-
-		//If You Hit An Obstacle, Get The Real Velocity From The Character Controller To Slow Down
-		//if ((CC.collisionFlags & CollisionFlags.Sides) != 0)
-		//{
-			
-			CurrentSpeed = new Vector3(CC.velocity.x, 0, CC.velocity.z);
-		//}
+		CurrentSpeed = new Vector3(CC.velocity.x, 0, CC.velocity.z);
 
 		GravityCheck();
 		CrouchCheck();
@@ -76,12 +70,26 @@ public class Player : MonoBehaviour
 			RaycastHit Information;
 
 			if (StairSnap)
-				while (PreviousPosition != transform.position)
+			{
+				Vector3 LerpedPosition;
+				bool Detected = false;
+
+				for (float T = 0; T < 1; T += .1f)
 				{
-					PreviousPosition = Vector3.MoveTowards(PreviousPosition, transform.position, .1f);
-					if (Physics.Raycast(PreviousPosition, Vector2.down, CC.stepOffset * 2 + CC.skinWidth))
+					LerpedPosition = Vector3.Lerp(PreviousPosition, transform.position, T);
+					if (Physics.Raycast(LerpedPosition, Vector2.down, CC.stepOffset * 2 + CC.skinWidth))
+						Detected = true;
+					
+					else print("Falling");
+					
+					if (Detected)
+					{
 						CC.Move(Vector2.down * 9999);
+						break;
+					}
 				}
+			}
+
 
 			if (Input.GetKeyDown(KeyCode.Space) && !Physics.SphereCast(transform.position + Vector3.up * CC.height, CC.radius, Vector2.up, out Information, StandHeight))
 				Gravity = -JumpStrength;

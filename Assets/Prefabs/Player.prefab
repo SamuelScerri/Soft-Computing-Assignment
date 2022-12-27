@@ -131,7 +131,7 @@ MonoBehaviour:
   CrouchHeight: 1
   StandHeight: 2
   StairSnap: 1
-  CameraInterpolation: 1
+  CameraInterpolation: 0
   IsCrouched: 0
   Acceleration: 0.2
   CameraInterpolationStrength: 0.1
