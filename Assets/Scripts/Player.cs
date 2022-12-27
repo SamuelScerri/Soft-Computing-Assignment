@@ -25,6 +25,8 @@ public class Player : MonoBehaviour
 
 	private bool LastGrounded;
 
+	private byte jumpthing;
+
 	private void Start()
 	{
 		CC = GetComponent<CharacterController>();
@@ -61,45 +63,46 @@ public class Player : MonoBehaviour
 
 	private void GravityCheck()
 	{
-		if (LastGrounded)
+		Gravity = Mathf.MoveTowards(Gravity, FallSpeed * 2, FallSpeed * Time.deltaTime);
+		CC.Move(Vector2.down * Gravity * Time.deltaTime);
+
+		Gravity = CC.isGrounded ? 0 : Gravity;
+		RaycastHit Information;
+
+		if (LastGrounded && !CC.isGrounded)
 		{
 			//This Is To Ensure That The Player Will Go Down The Stairs Properly, Without Bouncing Awkwardly Down; Giving The Illusion Of Your Character Actually Going Down The Stairs
 			//The While Loop Is Used To Ensure That Low Framerate Won't Affect The Stair Movement, This Can Be Tested With Very High Movement Speeds, And Will Hopefully Always Work
 
 			//Note, It Is Recommended That Camera Interpolation Is Checked To Avoid The Jittered Movement When You Go Down The Stairs
-			RaycastHit Information;
-
 			if (StairSnap)
 			{
+				float InverseDistance = 1 / Vector3.Distance(PreviousPosition, transform.position);
 				Vector3 LerpedPosition;
-				bool Detected = false;
 
-				for (float T = 0; T < 1; T += .1f)
+				for (float T = 0; T < 1; T += InverseDistance)
 				{
 					LerpedPosition = Vector3.Lerp(PreviousPosition, transform.position, T);
+
 					if (Physics.Raycast(LerpedPosition, Vector2.down, CC.stepOffset * 2 + CC.skinWidth))
-						Detected = true;
-					
-					else print("Falling");
-					
-					if (Detected)
 					{
-						CC.Move(Vector2.down * 9999);
-						break;
+						//Get Another Raycast From The Current Position To Move The Character Accordingly Down The Stairs
+						Physics.Raycast(transform.position, Vector2.down, out Information);
+						CC.Move(Vector2.down * Information.distance);
+						T = 1;
 					}
 				}
 			}
-
-
-			if (Input.GetKeyDown(KeyCode.Space) && !Physics.SphereCast(transform.position + Vector3.up * CC.height, CC.radius, Vector2.up, out Information, StandHeight))
-				Gravity = -JumpStrength;
-			else Gravity = 0;
 		}
 
-		Gravity = Mathf.MoveTowards(Gravity, FallSpeed * 2, FallSpeed * Time.deltaTime);
-		CC.Move(Vector2.down * Gravity * Time.deltaTime);
-
-		LastGrounded = CC.isGrounded;
+		if (CC.isGrounded && Input.GetKeyDown(KeyCode.Space) && !Physics.SphereCast(transform.position + Vector3.up * CC.height, CC.radius, Vector2.up, out Information, StandHeight))
+		{
+			//This Will Ensure That Stair Snapping Will Not Work In The Next Frame
+			LastGrounded = false;
+			Gravity = -JumpStrength;
+		}
+		
+		else LastGrounded = CC.isGrounded;
 	}
 
 	private void CrouchCheck()
