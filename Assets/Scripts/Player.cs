@@ -43,12 +43,11 @@ public class Player : MonoBehaviour
 		Direction.Normalize();
 
 		//Smooth Damp Will Ensure That The Acceleration Will Be Constant Across Different Framerates
-		if (Input.GetKey(KeyCode.LeftShift) && LastGrounded)
-			CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * RunSpeed, ref CurrentVelocity, Acceleration);
-		else if(IsCrouched)
+		if (IsCrouched)
 			CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * CrouchSpeed, ref CurrentVelocity, Acceleration);
-		else
-			CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * WalkSpeed, ref CurrentVelocity, Acceleration);
+		else if (Input.GetKey(KeyCode.LeftShift) && LastGrounded)
+			CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * RunSpeed, ref CurrentVelocity, Acceleration);
+		else CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * WalkSpeed, ref CurrentVelocity, Acceleration);
 
 		CC.Move(CurrentSpeed * Time.deltaTime);
 
@@ -67,15 +66,17 @@ public class Player : MonoBehaviour
 			//The While Loop Is Used To Ensure That Low Framerate Won't Affect The Stair Movement, This Can Be Tested With Very High Movement Speeds, And Will Hopefully Always Work
 
 			//Note, It Is Recommended That Camera Interpolation Is Checked To Avoid The Jittered Movement When You Go Down The Stairs
+			RaycastHit Information;
+
 			if (StairSnap)
 				while (PreviousPosition != transform.position)
 				{
 					PreviousPosition = Vector3.MoveTowards(PreviousPosition, transform.position, .1f);
-					if (Physics.Raycast(PreviousPosition, Vector2.down, CC.stepOffset * 2 + CC.skinWidth))
+					if (Physics.SphereCast(PreviousPosition, CC.radius, Vector2.down, out Information, CC.stepOffset * 2 + CC.skinWidth))
 						CC.Move(Vector2.down * 512);
 				}
-			
-			if (Input.GetKeyDown(KeyCode.Space))
+
+			if (Input.GetKeyDown(KeyCode.Space) && !Physics.SphereCast(transform.position + Vector3.up * CC.height, CC.radius, Vector2.up, out Information, StandHeight))
 				Gravity = -JumpStrength;
 			else Gravity = 0;
 		}
@@ -90,7 +91,9 @@ public class Player : MonoBehaviour
 	{
 		if (LastGrounded)
 		{
-			if (Input.GetKey(KeyCode.LeftControl))
+			RaycastHit Information;
+
+			if (Input.GetKey(KeyCode.LeftControl) || Physics.SphereCast(transform.position + Vector3.up * CC.height, CC.radius, Vector2.up, out Information, StandHeight))
 			{
 				CC.height = CrouchHeight;
 				IsCrouched = true;
@@ -102,8 +105,6 @@ public class Player : MonoBehaviour
 				IsCrouched = false;
 			}
 		}
-			
-
 
 		CC.center = Vector2.up * CC.height / 2;
 	}

@@ -134,7 +134,7 @@ MonoBehaviour:
   CameraInterpolation: 1
   IsCrouched: 0
   Acceleration: 0.2
-  CameraInterpolationStrength: 0.08
+  CameraInterpolationStrength: 0.1
 --- !u!143 &8322781128379608116
 CharacterController:
   m_ObjectHideFlags: 0
