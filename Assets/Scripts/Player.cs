@@ -31,7 +31,7 @@ public class Player : MonoBehaviour
 		Cursor.lockState = CursorLockMode.Locked;
 
 		CameraPosition = Camera.main.transform.position.y;
-		CC.Move(Vector2.down * 512);
+		CC.Move(Vector2.down * 9999);
 	}
 
 	private void Update()
@@ -50,6 +50,13 @@ public class Player : MonoBehaviour
 		else CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * WalkSpeed, ref CurrentVelocity, Acceleration);
 
 		CC.Move(CurrentSpeed * Time.deltaTime);
+
+		//If You Hit An Obstacle, Get The Real Velocity From The Character Controller To Slow Down
+		//if ((CC.collisionFlags & CollisionFlags.Sides) != 0)
+		//{
+			
+			CurrentSpeed = new Vector3(CC.velocity.x, 0, CC.velocity.z);
+		//}
 
 		GravityCheck();
 		CrouchCheck();
@@ -72,8 +79,8 @@ public class Player : MonoBehaviour
 				while (PreviousPosition != transform.position)
 				{
 					PreviousPosition = Vector3.MoveTowards(PreviousPosition, transform.position, .1f);
-					if (Physics.SphereCast(PreviousPosition, CC.radius / 2, Vector2.down, out Information, CC.stepOffset * 2 + CC.skinWidth))
-						CC.Move(Vector2.down * 512);
+					if (Physics.Raycast(PreviousPosition, Vector2.down, CC.stepOffset * 2 + CC.skinWidth))
+						CC.Move(Vector2.down * 9999);
 				}
 
 			if (Input.GetKeyDown(KeyCode.Space) && !Physics.SphereCast(transform.position + Vector3.up * CC.height, CC.radius, Vector2.up, out Information, StandHeight))
