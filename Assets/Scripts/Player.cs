@@ -72,7 +72,7 @@ public class Player : MonoBehaviour
 				while (PreviousPosition != transform.position)
 				{
 					PreviousPosition = Vector3.MoveTowards(PreviousPosition, transform.position, .1f);
-					if (Physics.SphereCast(PreviousPosition, CC.radius, Vector2.down, out Information, CC.stepOffset * 2 + CC.skinWidth))
+					if (Physics.SphereCast(PreviousPosition, CC.radius / 2, Vector2.down, out Information, CC.stepOffset * 2 + CC.skinWidth))
 						CC.Move(Vector2.down * 512);
 				}
 
