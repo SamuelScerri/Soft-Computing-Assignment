@@ -10,24 +10,18 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 	[SerializeField]
-	private byte Sensitivity, WalkSpeed, RunSpeed, FallSpeed, JumpStrength;
+	private byte Sensitivity, WalkSpeed, RunSpeed, CrouchSpeed, FallSpeed, JumpStrength, CrouchHeight, StandHeight;
 
 	[SerializeField]
-	private bool StairSnap, CameraInterpolation;
+	private bool StairSnap, CameraInterpolation, IsCrouched;
 
 	[SerializeField]
-	private float Acceleration;
+	private float Acceleration, CameraInterpolationStrength;
 
 	private CharacterController CC;
 
-	private Vector3 CurrentSpeed;
-	private Vector3 CurrentVelocity;
-	private Vector3 PreviousPosition;
-	private float CameraPosition;
-	private float CameraVelocity;
-
-	private float RotationLimit;
-	private float Gravity;
+	private Vector3 CurrentSpeed, CurrentVelocity, PreviousPosition;
+	private float CameraPosition, CameraVelocity, RotationLimit, Gravity;
 
 	private bool LastGrounded;
 
@@ -51,17 +45,18 @@ public class Player : MonoBehaviour
 		//Smooth Damp Will Ensure That The Acceleration Will Be Constant Across Different Framerates
 		if (Input.GetKey(KeyCode.LeftShift) && LastGrounded)
 			CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * RunSpeed, ref CurrentVelocity, Acceleration);
-		else CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * WalkSpeed, ref CurrentVelocity, Acceleration);
-
-
+		else if(IsCrouched)
+			CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * CrouchSpeed, ref CurrentVelocity, Acceleration);
+		else
+			CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * WalkSpeed, ref CurrentVelocity, Acceleration);
 
 		CC.Move(CurrentSpeed * Time.deltaTime);
+
 		GravityCheck();
+		CrouchCheck();
 
 		//This Will Be Used For The Next Gravity Check, More Information Is Given In The Function
 		PreviousPosition = transform.position;
-
-
 	}
 
 	private void GravityCheck()
@@ -91,6 +86,28 @@ public class Player : MonoBehaviour
 		LastGrounded = CC.isGrounded;
 	}
 
+	private void CrouchCheck()
+	{
+		if (LastGrounded)
+		{
+			if (Input.GetKey(KeyCode.LeftControl))
+			{
+				CC.height = CrouchHeight;
+				IsCrouched = true;
+			}
+
+			else
+			{
+				CC.height = StandHeight;
+				IsCrouched = false;
+			}
+		}
+			
+
+
+		CC.center = Vector2.up * CC.height / 2;
+	}
+
 	private void LateUpdate()
 	{
 		transform.Rotate(Vector2.up * Input.GetAxis("Mouse X") * Sensitivity);
@@ -103,7 +120,7 @@ public class Player : MonoBehaviour
 		//Smooth Camera Movement
 		if (CameraInterpolation)
 		{
-			CameraPosition = Mathf.SmoothDamp(CameraPosition, transform.position.y + 2, ref CameraVelocity, .04f);
+			CameraPosition = Mathf.SmoothDamp(CameraPosition, transform.position.y + CC.height, ref CameraVelocity, CameraInterpolationStrength);
 			Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, CameraPosition, Camera.main.transform.position.z);
 		}
 	}

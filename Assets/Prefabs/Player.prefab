@@ -123,13 +123,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Sensitivity: 1
-  WalkSpeed: 8
-  RunSpeed: 16
+  WalkSpeed: 4
+  RunSpeed: 8
+  CrouchSpeed: 2
   FallSpeed: 32
   JumpStrength: 12
+  CrouchHeight: 1
+  StandHeight: 2
   StairSnap: 1
   CameraInterpolation: 1
+  IsCrouched: 0
   Acceleration: 0.2
+  CameraInterpolationStrength: 0.08
 --- !u!143 &8322781128379608116
 CharacterController:
   m_ObjectHideFlags: 0
