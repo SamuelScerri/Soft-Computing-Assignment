@@ -66,13 +66,13 @@ public class Player : MonoBehaviour
 		Gravity = Mathf.MoveTowards(Gravity, FallSpeed * 2, FallSpeed * Time.deltaTime);
 		CC.Move(Vector2.down * Gravity * Time.deltaTime);
 
-		Gravity = CC.isGrounded ? 0 : Gravity;
-		RaycastHit Information;
+		Gravity = CC.isGrounded || CC.collisionFlags == CollisionFlags.Above ? 0 : Gravity;
+	
 
 		if (LastGrounded && !CC.isGrounded)
 		{
 			//This Is To Ensure That The Player Will Go Down The Stairs Properly, Without Bouncing Awkwardly Down; Giving The Illusion Of Your Character Actually Going Down The Stairs
-			//The While Loop Is Used To Ensure That Low Framerate Won't Affect The Stair Movement, This Can Be Tested With Very High Movement Speeds, And Will Hopefully Always Work
+			//The For Loop Is Used To Ensure That Low Framerate Won't Affect The Stair Movement, This Can Be Tested With Very High Movement Speeds, And Will Hopefully Always Work
 
 			bool DebugDetect = true;
 
@@ -80,14 +80,14 @@ public class Player : MonoBehaviour
 			if (StairSnap)
 			{
 				float InverseDistance = 1 / Vector3.Distance(PreviousPosition, transform.position);
-				Vector3 LerpedPosition;
 
 				for (float T = 0; T < 1; T += InverseDistance)
 				{
-					LerpedPosition = Vector3.Lerp(PreviousPosition, transform.position, T);
+					Vector3 LerpedPosition = Vector3.Lerp(PreviousPosition, transform.position, T);
 
 					if (Physics.Raycast(LerpedPosition, Vector2.down, CC.stepOffset * 2 + CC.skinWidth))
 					{
+						RaycastHit Information;
 						//Get Another Raycast From The Current Position To Move The Character Accordingly Down The Stairs
 						Physics.Raycast(transform.position, Vector2.down, out Information);
 						CC.Move(Vector2.down * Information.distance);
@@ -102,7 +102,7 @@ public class Player : MonoBehaviour
 			}
 		}
 
-		if (CC.isGrounded && Input.GetKeyDown(KeyCode.Space) && !Physics.CapsuleCast(transform.position + Vector3.up * CC.stepOffset, transform.position + Vector3.up * CC.stepOffset, CC.radius, Vector3.up, StandHeight + CrouchHeight))
+		if (CC.isGrounded && Input.GetKeyDown(KeyCode.Space) && !Physics.CapsuleCast(transform.position + Vector3.up * CC.stepOffset, transform.position + Vector3.up * CC.stepOffset, CC.radius, Vector3.up, StandHeight - CC.stepOffset + CC.skinWidth))
 		{
 			//This Will Ensure That Stair Snapping Will Not Work In The Next Frame
 			LastGrounded = false;
@@ -116,10 +116,8 @@ public class Player : MonoBehaviour
 	{
 		if (LastGrounded)
 		{
-			RaycastHit Information;
-
 			if (Input.GetKey(KeyCode.LeftControl) ||
-				Physics.CapsuleCast(transform.position + Vector3.up * CC.stepOffset, transform.position + Vector3.up * CC.stepOffset, CC.radius, Vector3.up, StandHeight + CrouchHeight))
+				Physics.CapsuleCast(transform.position + Vector3.up * CC.stepOffset, transform.position + Vector3.up * CC.stepOffset, CC.radius, Vector3.up, StandHeight - CC.stepOffset + CC.skinWidth))
 			{
 				CC.height = CrouchHeight;
 				IsCrouched = true;
@@ -150,5 +148,10 @@ public class Player : MonoBehaviour
 			CameraPosition = Mathf.SmoothDamp(CameraPosition, transform.position.y + CC.height, ref CameraVelocity, CameraInterpolationStrength);
 			Camera.main.transform.position = new Vector3(Camera.main.transform.position.x, CameraPosition, Camera.main.transform.position.z);
 		}
+	}
+
+	public Vector3 GetVelocity()
+	{
+		return transform.InverseTransformDirection(CurrentSpeed);
 	}
 }
