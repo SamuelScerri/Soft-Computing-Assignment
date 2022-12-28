@@ -10,13 +10,13 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
 	[SerializeField]
-	private byte Sensitivity, WalkSpeed, RunSpeed, CrouchSpeed, FallSpeed, JumpStrength, CrouchHeight, StandHeight;
+	private byte Sensitivity, WalkSpeed, RunSpeed, CrouchSpeed, FallSpeed, JumpStrength;
 
 	[SerializeField]
 	private bool StairSnap, CameraInterpolation, IsCrouched;
 
 	[SerializeField]
-	private float Acceleration, CameraInterpolationStrength;
+	private float Acceleration, CameraInterpolationStrength, StandHeight, CrouchHeight;
 
 	private CharacterController CC;
 
@@ -74,6 +74,8 @@ public class Player : MonoBehaviour
 			//This Is To Ensure That The Player Will Go Down The Stairs Properly, Without Bouncing Awkwardly Down; Giving The Illusion Of Your Character Actually Going Down The Stairs
 			//The While Loop Is Used To Ensure That Low Framerate Won't Affect The Stair Movement, This Can Be Tested With Very High Movement Speeds, And Will Hopefully Always Work
 
+			bool DebugDetect = true;
+
 			//Note, It Is Recommended That Camera Interpolation Is Checked To Avoid The Jittered Movement When You Go Down The Stairs
 			if (StairSnap)
 			{
@@ -90,12 +92,17 @@ public class Player : MonoBehaviour
 						Physics.Raycast(transform.position, Vector2.down, out Information);
 						CC.Move(Vector2.down * Information.distance);
 						T = 1;
+
+						DebugDetect = false;
 					}
 				}
+
+				if (DebugDetect)
+					print("Falling");
 			}
 		}
 
-		if (CC.isGrounded && Input.GetKeyDown(KeyCode.Space) && !Physics.SphereCast(transform.position + Vector3.up * CC.height, CC.radius, Vector2.up, out Information, StandHeight))
+		if (CC.isGrounded && Input.GetKeyDown(KeyCode.Space) && !Physics.CapsuleCast(transform.position + Vector3.up * CC.stepOffset, transform.position + Vector3.up * CC.stepOffset, CC.radius, Vector3.up, StandHeight + CrouchHeight))
 		{
 			//This Will Ensure That Stair Snapping Will Not Work In The Next Frame
 			LastGrounded = false;
@@ -111,7 +118,8 @@ public class Player : MonoBehaviour
 		{
 			RaycastHit Information;
 
-			if (Input.GetKey(KeyCode.LeftControl) || Physics.SphereCast(transform.position + Vector3.up * CC.height, CC.radius, Vector2.up, out Information, StandHeight))
+			if (Input.GetKey(KeyCode.LeftControl) ||
+				Physics.CapsuleCast(transform.position + Vector3.up * CC.stepOffset, transform.position + Vector3.up * CC.stepOffset, CC.radius, Vector3.up, StandHeight + CrouchHeight))
 			{
 				CC.height = CrouchHeight;
 				IsCrouched = true;
