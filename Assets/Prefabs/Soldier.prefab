@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 1841200084607537822}
   - component: {fileID: 1841200084607537823}
   - component: {fileID: 1841200084607537824}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Soldier
   m_TagString: Soldier
   m_Icon: {fileID: 0}
@@ -54,7 +54,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 668c40fec3a3a4d428a7c941e786e46d, type: 2}
   m_CullingMode: 1
   m_UpdateMode: 0
-  m_ApplyRootMotion: 1
+  m_ApplyRootMotion: 0
   m_LinearVelocityBlending: 0
   m_StabilizeFeet: 0
   m_WarningMessage: 
@@ -395,7 +395,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7877828644252798188}
   - component: {fileID: 7877828644252798187}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -489,7 +489,7 @@ GameObject:
   m_Component:
   - component: {fileID: 830684383119432971}
   - component: {fileID: 5450381768924565539}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Soldier_head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -503,8 +503,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7891582718151325917}
-  m_LocalRotation: {x: -0.15143226, y: 0.0000019050904, z: 0.00000007563721, w: 0.98846763}
-  m_LocalPosition: {x: -0.0000006103484, y: 1.8984549, z: 0.0012198034}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.875, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children: []
