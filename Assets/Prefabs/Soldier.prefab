@@ -111,8 +111,8 @@ SkinnedMeshRenderer:
   m_BlendShapeWeights: []
   m_RootBone: {fileID: 0}
   m_AABB:
-    m_Center: {x: -0.00010919571, y: -0.2721811, z: -0.026133418}
-    m_Extent: {x: 1.3460814, y: 1.2027149, z: 0.34653473}
+    m_Center: {x: 0, y: 1.5, z: 0}
+    m_Extent: {x: 1, y: 1.5, z: 0.5}
   m_DirtyAABB: 0
 --- !u!195 &1841200084607537819
 NavMeshAgent:
