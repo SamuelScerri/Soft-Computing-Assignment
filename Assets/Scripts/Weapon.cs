@@ -1,56 +1,137 @@
 using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
 
+
+[System.Serializable]
+public class WeaponInformation
+{
+	public Vector3 WeaponDestination;
+	public Mesh WeaponModel;
+	public AudioClip WeaponSound;
+
+	public bool Automatic;
+	public float Delay, Spread;
+	public byte Bullets;
+
+	public WeaponInformation(Vector3 WeaponDestination, Mesh WeaponModel, AudioClip WeaponSound, bool Automatic, float Delay, float Spread, byte Bullets)
+	{
+		this.WeaponDestination = WeaponDestination;
+		this.WeaponModel = WeaponModel;
+		this.WeaponSound = WeaponSound;
+		this.Automatic = Automatic;
+		this.Delay = Delay;
+		this.Spread = Spread;
+		this.Bullets = Bullets;
+	}
+}
+ 
 public class Weapon : MonoBehaviour
 {
 	[SerializeField]
-	private Vector3 WeaponDestination;
+	private List<WeaponInformation> Weapons;
 
 	[SerializeField]
 	private byte WeaponSwayStrength;
 
 	[SerializeField]
+	private GameObject BulletHole, Bullet;
+
+	[SerializeField]
 	private bool OffsetWeapon;
 
-	private Transform WeaponTransform;
-	private Transform CameraTransform;
+	private Vector3 WeaponSway, WeaponSwayVelocity, WeaponOffsetVelocity;
 
 	private Player Character;
-	
-	private Vector3 WeaponSway;
-	private Vector3 WeaponOffset;
-
-	private Vector3 WeaponSwayVelocity;
-	private Vector3 WeaponOffsetVelocity;
-
+	private GameObject WeaponTransform;
 	private Animator Animate;
-	
+	private AudioSource Sound;
+
+	[SerializeField]
+	private byte TotalAmmo;
+
+	private byte CurrentWeapon;
+	private bool CanFire = true;
 
 	private void Start()
 	{
-		WeaponTransform = Camera.main.transform.GetChild(0).GetChild(0);
-		CameraTransform = Camera.main.transform;
+		WeaponTransform = Camera.main.transform.GetChild(0).GetChild(0).gameObject;
 
 		Character = GetComponent<Player>();
 		Animate = GetComponent<Animator>();
+		Sound = WeaponTransform.GetComponent<AudioSource>();
+
+		GameManager.SetUIText(TotalAmmo.ToString());
+
+		SwitchWeapon(0);
 	}
 
-	private void LateUpdate()
+	private void Update()
 	{
-		if (OffsetWeapon)
+		if (Input.GetMouseButton(0) && CanFire && TotalAmmo > 0)
 		{
-			WeaponOffset = Vector3.SmoothDamp(WeaponOffset, -Character.GetVelocity() / 512, ref WeaponOffsetVelocity, .1f);
-			WeaponTransform.localPosition = WeaponDestination + WeaponOffset;
+			StartCoroutine(Muzzle());
+			StartCoroutine(Fire());
 		}
 			
-		WeaponSway = Vector3.SmoothDamp(WeaponSway, new Vector3(Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"), Input.GetAxis("Mouse X")) * WeaponSwayStrength, ref WeaponSwayVelocity, .1f);
-		WeaponTransform.eulerAngles = CameraTransform.eulerAngles + WeaponSway;
+	}
 
-		if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
-			Animate.SetBool("IsMoving", true);
-		else Animate.SetBool("IsMoving", false);
+	//The Late Update Is Responsible For Showing The Weapon, This Includes Weapon Swaying & Moving Animations
+	private void LateUpdate()
+	{
+		WeaponSway = Vector3.SmoothDamp(WeaponSway, new Vector3(Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"), Input.GetAxis("Mouse X")) * WeaponSwayStrength, ref WeaponSwayVelocity, .1f, Mathf.Infinity, Time.unscaledDeltaTime);
+		WeaponTransform.transform.eulerAngles = Camera.main.transform.eulerAngles + WeaponSway;
 
-		Animate.speed = Character.GetVelocity().magnitude / 8;
+		Animate.SetBool("IsMoving", Character.IsGrounded() ? (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0) : false);
+		Animate.SetFloat("Speed", Character.GetVelocity().magnitude / 3);
+	}
+
+	private void SwitchWeapon(byte Index)
+	{
+		WeaponTransform.transform.GetChild(0).GetComponent<MeshFilter>().mesh = Weapons[Index].WeaponModel;
+		Sound.clip = Weapons[Index].WeaponSound;
+
+		CurrentWeapon = 0;
+	}
+
+	private IEnumerator Fire()
+	{
+		CanFire = false;
+
+		Animate.SetTrigger("Fire");
+
+		Vector3 ForwardVector = Camera.main.transform.TransformDirection(Vector3.forward);
+
+		for (byte I = 0; I < Mathf.Clamp(Weapons[CurrentWeapon].Bullets, 0, TotalAmmo); I++)
+		{
+			Vector3 BulletSpread = new Vector3(Random.Range(-Weapons[CurrentWeapon].Spread, Weapons[CurrentWeapon].Spread),
+				Random.Range(-Weapons[CurrentWeapon].Spread, Weapons[CurrentWeapon].Spread),
+				Random.Range(-Weapons[CurrentWeapon].Spread, Weapons[CurrentWeapon].Spread));
+			Instantiate(Bullet, Camera.main.transform.position, Camera.main.transform.rotation * Quaternion.Euler(BulletSpread));
+
+			TotalAmmo--;
+
+			GameManager.SetUIText(TotalAmmo.ToString());
+		}
+
+
+		Sound.Play();
+
+		yield return new WaitForSeconds(Weapons[CurrentWeapon].Delay);
+
+		CanFire = true;
+	}
+
+	private IEnumerator Muzzle()
+	{
+		transform.GetChild(1).gameObject.SetActive(true);
+		yield return new WaitForSeconds(.04f);
+		transform.GetChild(1).gameObject.SetActive(false);
+	}
+
+	public void AddAmmo(byte Amount)
+	{
+		TotalAmmo += Amount;
 	}
 }

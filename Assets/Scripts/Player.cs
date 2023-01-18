@@ -7,6 +7,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+
 public class Player : MonoBehaviour
 {
 	[SerializeField]
@@ -18,7 +20,12 @@ public class Player : MonoBehaviour
 	[SerializeField]
 	private float Acceleration, CameraInterpolationStrength, StandHeight, CrouchHeight;
 
+	[SerializeField]
+	private LayerMask Mask;
+
+
 	private CharacterController CC;
+
 
 	private Vector3 CurrentSpeed, CurrentVelocity, PreviousPosition;
 	private float CameraPosition, CameraVelocity, RotationLimit, Gravity;
@@ -27,8 +34,12 @@ public class Player : MonoBehaviour
 
 	private byte jumpthing;
 
+	
+
 	private void Start()
 	{
+		GameManager.Player = this.gameObject;
+
 		CC = GetComponent<CharacterController>();
 		Cursor.lockState = CursorLockMode.Locked;
 
@@ -46,13 +57,13 @@ public class Player : MonoBehaviour
 
 		//Smooth Damp Will Ensure That The Acceleration Will Be Constant Across Different Framerates
 		if (IsCrouched)
-			CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * CrouchSpeed, ref CurrentVelocity, Acceleration);
+			CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * CrouchSpeed, ref CurrentVelocity, Acceleration, Mathf.Infinity, Time.unscaledDeltaTime);
 		else if (Input.GetKey(KeyCode.LeftShift) && LastGrounded)
-			CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * RunSpeed, ref CurrentVelocity, Acceleration);
-		else CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * WalkSpeed, ref CurrentVelocity, Acceleration);
+			CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * RunSpeed, ref CurrentVelocity, Acceleration, Mathf.Infinity, Time.unscaledDeltaTime);
+		else CurrentSpeed = Vector3.SmoothDamp(CurrentSpeed, Direction * WalkSpeed, ref CurrentVelocity, Acceleration, Mathf.Infinity, Time.unscaledDeltaTime);
 
-		CC.Move(CurrentSpeed * Time.deltaTime);
-		CurrentSpeed = new Vector3(CC.velocity.x, 0, CC.velocity.z);
+		CC.Move(CurrentSpeed * Time.unscaledDeltaTime);
+		//CurrentSpeed = new Vector3(CC.velocity.x, 0, CC.velocity.z);
 
 		GravityCheck();
 		CrouchCheck();
@@ -60,6 +71,8 @@ public class Player : MonoBehaviour
 		//This Will Be Used For The Next Gravity Check, More Information Is Given In The Function
 		PreviousPosition = transform.position;
 	}
+
+
 
 	private void GravityCheck()
 	{
@@ -102,7 +115,7 @@ public class Player : MonoBehaviour
 			}
 		}
 
-		if (CC.isGrounded && Input.GetKeyDown(KeyCode.Space) && !Physics.CapsuleCast(transform.position + Vector3.up * CC.stepOffset, transform.position + Vector3.up * CC.stepOffset, CC.radius, Vector3.up, StandHeight - CC.stepOffset + CC.skinWidth))
+		if (CC.isGrounded && Input.GetKeyDown(KeyCode.Space) && !Physics.CapsuleCast(transform.position + Vector3.up * CC.stepOffset, transform.position + Vector3.up * CC.stepOffset, CC.radius, Vector3.up, StandHeight - CC.stepOffset + CC.skinWidth, Mask))
 		{
 			//This Will Ensure That Stair Snapping Will Not Work In The Next Frame
 			LastGrounded = false;
@@ -117,7 +130,7 @@ public class Player : MonoBehaviour
 		if (LastGrounded)
 		{
 			if (Input.GetKey(KeyCode.LeftControl) ||
-				Physics.CapsuleCast(transform.position + Vector3.up * CC.stepOffset, transform.position + Vector3.up * CC.stepOffset, CC.radius, Vector3.up, StandHeight - CC.stepOffset + CC.skinWidth))
+				Physics.CapsuleCast(transform.position + Vector3.up * CC.stepOffset, transform.position + Vector3.up * CC.stepOffset, CC.radius, Vector3.up, StandHeight - CC.stepOffset + CC.skinWidth, Mask))
 			{
 				CC.height = CrouchHeight;
 				IsCrouched = true;
@@ -153,5 +166,30 @@ public class Player : MonoBehaviour
 	public Vector3 GetVelocity()
 	{
 		return transform.InverseTransformDirection(CurrentSpeed);
+	}
+
+	public Vector3 GetCurrentSpeed()
+	{
+		return CurrentSpeed;
+	}
+
+	public float GetRunSpeed()
+	{
+		return RunSpeed;
+	}
+
+	public float GetCrouchSpeed()
+	{
+		return CrouchSpeed;
+	}
+
+	public bool IsGrounded()
+	{
+		return CC.isGrounded;
+	}
+
+	public void Kill()
+	{
+
 	}
 }
