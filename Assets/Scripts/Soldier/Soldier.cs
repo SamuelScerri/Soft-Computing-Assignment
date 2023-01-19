@@ -145,7 +145,7 @@ public class Soldier : MonoBehaviour
 		while (true)
 		{
 			yield return new WaitUntil(() => HasArrived(_agent.destination));
-			yield return new WaitForSeconds(2);
+			yield return new WaitForSeconds(4);
 
 			GetComponent<SoldierCallout>().Clear();
 

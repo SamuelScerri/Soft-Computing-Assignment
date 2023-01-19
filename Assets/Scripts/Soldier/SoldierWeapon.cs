@@ -7,6 +7,10 @@ public class SoldierWeapon : MonoBehaviour
 {
 	[SerializeField]
 	private WeaponData _weaponInformation;
+
+	[SerializeField]
+	private GameObject _bulletPrefab;
+
 	private Animator _animator;
 	private AudioSource _source;
 	private NavMeshAgent _agent;
@@ -45,14 +49,32 @@ public class SoldierWeapon : MonoBehaviour
 		{
 			if (Vector3.Distance(transform.position, player.position) <= _attackDistance && GetComponent<Soldier>().GetSoldierMode() == SoldierMode.Attack)
 			{
-				if (GetComponent<Soldier>().DetectObject(player.position, 45))
+				if (GetComponent<Soldier>().DetectObject(player.position, 15))
 				{
+					for (byte i = 0; i < _weaponInformation.BulletsAmount; i++)
+					{
+						float spreadX = Random.Range(-_weaponInformation.Spread, _weaponInformation.Spread);
+						float spreadY = Random.Range(-_weaponInformation.Spread, _weaponInformation.Spread);
+						float spreadZ = Random.Range(-_weaponInformation.Spread, _weaponInformation.Spread);
+
+						GameObject bullet = Instantiate(_bulletPrefab, transform.position + Vector3.up * 2, transform.rotation) as GameObject;
+
+						bullet.transform.Rotate(new Vector3(spreadX, spreadY, spreadZ));
+					}
+
+					transform.GetChild(0).gameObject.SetActive(true);
 					_animator.SetTrigger("Fire");
 					_source.Play();
+
+					yield return new WaitForSeconds(.01f);
+					transform.GetChild(0).gameObject.SetActive(false);
 				}
 
-				yield return new WaitForSeconds(_weaponInformation.Delay);
+				yield return new WaitForSeconds(_weaponInformation.Delay - .01f);
+				transform.GetChild(0).gameObject.SetActive(false);
 			}
+
+			transform.GetChild(0).gameObject.SetActive(false);
 
 			yield return null;
 		}

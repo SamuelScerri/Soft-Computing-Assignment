@@ -2,15 +2,16 @@ using UnityEngine;
 
 public class AudioScaler : MonoBehaviour
 {
-	private AudioSource Source;
+	private AudioSource[] _sources;
 
 	private void Start()
 	{
-		Source = GetComponent<AudioSource>();
+		_sources = GetComponents<AudioSource>();
 	}
 
 	private void Update()
 	{
-		Source.pitch = Time.timeScale;
+		foreach (AudioSource source in _sources)
+			source.pitch = Time.timeScale;
 	}
 }

@@ -8,9 +8,6 @@ public class GameManager : MonoBehaviour
 	public static GameManager Singleton;
 	public static bool Paused;
 
-	[SerializeField]
-	private GameObject PrefabUI;
-
 	private void Start()
 	{
 		if (Singleton != null)
@@ -33,5 +30,10 @@ public class GameManager : MonoBehaviour
 		Time.timeScale = Paused ? 0 : 1;
 
 		Cursor.lockState = Paused ? CursorLockMode.None : CursorLockMode.Locked;
+	}
+
+	public static void SetBulletTimeUI(float time)
+	{
+		Singleton.transform.GetChild(2).GetComponent<Text>().text = "Bullet Time: " + time.ToString();
 	}
 }

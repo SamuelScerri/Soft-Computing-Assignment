@@ -17,4 +17,4 @@ MonoBehaviour:
   Automatic: 1
   BulletsAmount: 1
   Delay: 0.2
-  Spread: 8
+  Spread: 4

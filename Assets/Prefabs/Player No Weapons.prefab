@@ -97,10 +97,12 @@ GameObject:
   - component: {fileID: 2947461698101841250}
   - component: {fileID: 2947461697747535974}
   - component: {fileID: 4367531275202624639}
+  - component: {fileID: 1064143453}
   - component: {fileID: 6037362069865256308}
   - component: {fileID: 5012178803698337509}
   - component: {fileID: 1156831465511931146}
   - component: {fileID: 8902723776487207020}
+  - component: {fileID: 4896805674797003295}
   m_Layer: 2
   m_Name: Player No Weapons
   m_TagString: Player
@@ -354,6 +356,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!136 &1064143453
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5117732205055446099}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.55
+  m_Height: 1
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6037362069865256308
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -401,8 +417,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 584336d116013e0438eccd490d5d29d2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Length: 3
-  Scale: 0.1
+  _length: 5
+  _scale: 0.25
 --- !u!114 &8902723776487207020
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,3 +436,15 @@ MonoBehaviour:
     _sources:
     - {fileID: 8300000, guid: 8e001351cd7065543a068386cde4c960, type: 3}
     - {fileID: 8300000, guid: c41fb169b2991c247a5466e00faa6639, type: 3}
+--- !u!114 &4896805674797003295
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5117732205055446099}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 838dc2c78050dca4ca2da289d16282fc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

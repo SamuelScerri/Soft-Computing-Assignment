@@ -27,25 +27,25 @@ public class PlayerCamera : MonoBehaviour
 				_cameraRotation = new Vector3(_cameraRotation.x, _cameraRotation.y, -15);
 
 			transform.eulerAngles = Vector2.up *
-				Mathf.SmoothDampAngle(transform.eulerAngles.y, _cameraRotation.y, ref _cameraDampedRotation.y, .1f);
+				Mathf.SmoothDampAngle(transform.eulerAngles.y, _cameraRotation.y, ref _cameraDampedRotation.y, .1f, Mathf.Infinity, Time.unscaledDeltaTime);
 
 			//This Is Responsible For Smoothly Rotating The Camera
 			Camera.main.transform.localRotation = Quaternion.Euler(
-				Mathf.SmoothDampAngle(Camera.main.transform.eulerAngles.x, _cameraRotation.x, ref _cameraDampedRotation.x, .1f),
+				Mathf.SmoothDampAngle(Camera.main.transform.eulerAngles.x, _cameraRotation.x, ref _cameraDampedRotation.x, .1f, Mathf.Infinity, Time.unscaledDeltaTime),
 				0,
-				Mathf.SmoothDampAngle(Camera.main.transform.eulerAngles.z, _cameraRotation.z, ref _cameraDampedRotation.z, .1f));
+				Mathf.SmoothDampAngle(Camera.main.transform.eulerAngles.z, _cameraRotation.z, ref _cameraDampedRotation.z, .1f, Mathf.Infinity, Time.unscaledDeltaTime));
 
 			//Camera Bobbing
 			if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
 			{
 				if (_cameraBob >= 3.14159f * 2)
 					_cameraBob -= 3.14159f * 2;
-				_cameraBob += Time.deltaTime * GetComponent<Player>().GetVelocity() * 4;
+				_cameraBob += Time.unscaledDeltaTime * GetComponent<Player>().GetVelocity() * 4;
 
 				_cameraBobDamped = 0;
 			}
 
-			else _cameraBob = Mathf.SmoothDampAngle(_cameraBob, 3.14159f * 2, ref _cameraBobDamped, .4f);
+			else _cameraBob = Mathf.SmoothDampAngle(_cameraBob, 3.14159f * 2, ref _cameraBobDamped, .4f, Mathf.Infinity, Time.unscaledDeltaTime);
 
 			UpdateCamera();
 		}
@@ -58,7 +58,7 @@ public class PlayerCamera : MonoBehaviour
 			_cameraRotation += new Vector3(Input.GetAxis("Mouse Y"), Input.GetAxis("Mouse X"), 0) * _cameraSensitivity;
 		_cameraRotation = new Vector2(Mathf.Clamp(_cameraRotation.x, -89, 89), _cameraRotation.y);
 
-		_cameraPosition = Mathf.SmoothDamp(_cameraPosition, _characterController.height, ref _cameraDampedPosition, .1f);
+		_cameraPosition = Mathf.SmoothDamp(_cameraPosition, _characterController.height, ref _cameraDampedPosition, .1f, Mathf.Infinity, Time.unscaledDeltaTime);
 		//Camera.main.transform.localPosition = Camera.main.transform.localRotation * Vector3.up * _cameraPosition;
 
 		Camera.main.transform.localPosition =  (Camera.main.transform.localRotation * new Vector3(0, _cameraPosition, 0));

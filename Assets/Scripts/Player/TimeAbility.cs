@@ -6,48 +6,47 @@ using UnityEngine.Rendering.PostProcessing;
 public class TimeAbility : MonoBehaviour
 {
 	[SerializeField]
-	private byte Length;
+	private float _length;
 
 	[SerializeField]
-	private float Scale;
+	private float _scale;
 
-	private float CurrentLength;
-	private bool Enabled;
-
-	private void Start()
-	{
-		CurrentLength = Length;
-	}
+	private float _currentLength;
+	private bool _enabled;
 
 	private void Update()
 	{
 		if (Input.GetKeyDown(KeyCode.LeftAlt))
 		{
-			if (Enabled)
+			if (_enabled)
 				DisableAbility();
 			else
 				EnableAbility();
 		}
 
-		if (Enabled)
-			CurrentLength -= Time.unscaledDeltaTime;
-		else CurrentLength += Time.unscaledDeltaTime;
+		if (_enabled)
+			_length -= Time.unscaledDeltaTime;
 		
-		if (CurrentLength <= 0 || Input.GetMouseButton(0))
+		if (_length <= 0 || Input.GetMouseButton(0))
 			DisableAbility();
-		
-		CurrentLength = Mathf.Clamp(CurrentLength, 0, Length);
+
+		GameManager.SetBulletTimeUI(Mathf.Clamp(_length, 0, Mathf.Infinity));
 	}
 
 	private void EnableAbility()
 	{
-		Enabled = true;
-		Time.timeScale = Scale;
+		_enabled = true;
+		Time.timeScale = _scale;
 	}
 
 	private void DisableAbility()
 	{
-		Enabled = false;
+		_enabled = false;
 		Time.timeScale = 1;
+	}
+
+	public bool IsEnabled()
+	{
+		return _enabled;
 	}
 }

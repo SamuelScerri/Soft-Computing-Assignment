@@ -35,12 +35,12 @@ public class Player : MonoBehaviour
 
 		//Smooth Damp Will Ensure That The Acceleration Will Be Constant Across Different Framerates
 		if (_isCrouched)
-			_currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _crouchSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.deltaTime);
-		else if (Input.GetKey(KeyCode.LeftShift) && _lastGrounded)
-			_currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _runSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.deltaTime);
-		else _currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _walkSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.deltaTime);
+			_currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _crouchSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.unscaledDeltaTime);
+		else if (Input.GetKey(KeyCode.LeftShift) && _lastGrounded && !GetComponent<TimeAbility>().IsEnabled())
+			_currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _runSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.unscaledDeltaTime);
+		else _currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _walkSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.unscaledDeltaTime);
 
-		_characterController.Move(_currentSpeed * Time.deltaTime);
+		_characterController.Move(_currentSpeed * Time.unscaledDeltaTime);
 		GetComponent<Footstep>().UpdateFootstep(_characterController.velocity.magnitude);
 
 		GravityUpdate();
