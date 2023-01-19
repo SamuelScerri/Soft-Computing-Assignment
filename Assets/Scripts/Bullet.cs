@@ -15,7 +15,7 @@ public class Bullet : MonoBehaviour
 	private void OnCollisionEnter(Collision Information)
 	{
 		if (Information.gameObject.tag == "Soldier")
-			Information.gameObject.GetComponent<Soldier>().Damage(1);
+			Information.gameObject.GetComponent<SoldierOld>().Damage(1);
 		else if (Information.gameObject.tag == "Player")
 			Information.gameObject.GetComponent<Player>().Kill();
 

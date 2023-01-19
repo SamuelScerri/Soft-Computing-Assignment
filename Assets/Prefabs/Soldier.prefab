@@ -12,14 +12,14 @@ GameObject:
   - component: {fileID: 1841200084607537826}
   - component: {fileID: 1841200084607537825}
   - component: {fileID: 1841200084607537819}
-  - component: {fileID: 1841200084607537820}
   - component: {fileID: 1841200084607537821}
   - component: {fileID: 1841200084607537822}
-  - component: {fileID: 1841200084607537823}
   - component: {fileID: 1841200084607537824}
-  m_Layer: 10
+  - component: {fileID: 1841200084607537820}
+  - component: {fileID: 1841200084607537823}
+  m_Layer: 2
   m_Name: Soldier
-  m_TagString: Soldier
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -124,8 +124,8 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 1
-  m_Acceleration: 0.5
+  m_Speed: 0
+  m_Acceleration: 0
   avoidancePriority: 50
   m_AngularSpeed: 360
   m_StoppingDistance: 0
@@ -136,37 +136,6 @@ NavMeshAgent:
   m_BaseOffset: -0.03125
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &1841200084607537820
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4910821079594701410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 97acab1fe1d010a4a8b9d40725851f9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Waypoint:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  Patrolling: {fileID: 8300000, guid: 90e7a41beed24be4288cb5fc4c528edf, type: 3}
-  Staying: {fileID: 0}
-  Searching: {fileID: 8300000, guid: 90e7a41beed24be4288cb5fc4c528edf, type: 3}
-  Attacking: {fileID: 8300000, guid: 36a050fa7b0a5e240999c434f679a28d, type: 3}
-  Dying: {fileID: 8300000, guid: 3d99ce34e6f299541b970e969f70b622, type: 3}
-  PatrollingSpeed: 2
-  AttackingSpeed: 4
-  Health: 3
-  CurrentMode: 0
-  AttackDistance: 10
-  BulletPrefab: {fileID: 4460232855300673395, guid: bebc1f0e26d74f34192158348d1e963b, type: 3}
-  TimeBetweenFire: 0.2
-  BulletsEveryShot: 1
-  BulletSpread: 2
 --- !u!136 &1841200084607537821
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -277,18 +246,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &1841200084607537823
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4910821079594701410}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5ed0f3aafde98914e96549de4f48dd3e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!82 &1841200084607537824
 AudioSource:
   m_ObjectHideFlags: 0
@@ -385,6 +342,37 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1841200084607537820
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4910821079594701410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 53fc2bab0578e534bbee9be0267e2798, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _waypoints:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  _patrolSpeed: 1
+  _attackSpeed: 2
+--- !u!114 &1841200084607537823
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4910821079594701410}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5ed0f3aafde98914e96549de4f48dd3e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &7877828644252798189
 GameObject:
   m_ObjectHideFlags: 0
@@ -395,7 +383,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7877828644252798188}
   - component: {fileID: 7877828644252798187}
-  m_Layer: 10
+  m_Layer: 2
   m_Name: Muzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -489,7 +477,7 @@ GameObject:
   m_Component:
   - component: {fileID: 830684383119432971}
   - component: {fileID: 5450381768924565539}
-  m_Layer: 10
+  m_Layer: 2
   m_Name: Soldier_head
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -3,212 +3,139 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public enum Modes
+public enum SoldierMode
 {
-	Patrolling,
-	Staying,
-	Searching,
-	Attacking
+	Patrol,
+	Search,
+	Attack,
 };
 
 public class Soldier : MonoBehaviour
 {
-	[SerializeField]
-	public List<Transform> Waypoint;
+	//This Is Used To Sync The Animation With The AI's Speed
+	private const float SlowAnimationSpeed = 0.976f;
+	private const float FastAnimationSpeed = 2.921f;
 
 	[SerializeField]
-	private AudioClip Patrolling, Staying, Searching, Attacking, Dying;
+	private Transform[] _waypoints;
+	private SoldierMode _soldierMode;
 
 	[SerializeField]
-	private byte PatrollingSpeed, AttackingSpeed;
+	private float _patrolSpeed, _attackSpeed;
+	
+	//Built-In Components
+	private NavMeshAgent _agent;
+	private Animator _animator;
 
-	[SerializeField]
-	private byte Health;
+	private Coroutine _currentCoroutine;
+	private float _agentSpeed;
 
-	[SerializeField]
-	private Modes CurrentMode;
-
-	[SerializeField]
-	private byte AttackDistance;
-
-	[SerializeField]
-	private GameObject BulletPrefab;
-
-	[SerializeField]
-	private float TimeBetweenFire;
-
-	[SerializeField]
-	private byte BulletsEveryShot;
-
-	[SerializeField]
-	private float BulletSpread;
-
-	private byte CurrentWaypointIndex;
-
-	private NavMeshAgent Agent;
-	private Animator Animate;
-	private AudioSource Source;
-
-	private AudioSource VoiceSource;
-
-	private Coroutine FireCoroutine;
-	private Coroutine DeathCoroutine;
-
-	//This Is The Actual Speed Of The Animation
-	private const float WalkAnimationSpeed = 0.976f;
-	private const float RunAnimationSpeed = 2.921f;
-	private const float StrafeAnimationSpeed = 3.189f;
-
-	private float SmoothWeight;
-	private float DeathTransition;
+	//This Is Used For Smoothing The Layer Weight
+	private float _animationDampReference;
 
 	private void Start()
 	{
-		Agent = GetComponent<NavMeshAgent>();
-		Animate = GetComponent<Animator>();
+		_agent = GetComponent<NavMeshAgent>();
+		_animator = GetComponent<Animator>();
+		_agentSpeed = _agent.speed;
 
-		AudioSource[] Sources = GetComponents<AudioSource>();
-		Source = Sources[0];
-		VoiceSource = Sources[1];
-
-		Agent.SetDestination(Waypoint[0].position);
-
-		Animate.SetTrigger(CurrentMode == Modes.Patrolling ? "Walk" : "Run");
+		_currentCoroutine = StartCoroutine(Patrol(_waypoints[0]));
 	}
 
 	private void Update()
 	{
-		if (DeathCoroutine == null)
-			SoldierUpdate();
-		else
+		_animator.SetFloat("Slow Speed", _agent.velocity.magnitude / SlowAnimationSpeed);
+		_animator.SetFloat("Fast Speed", _agent.velocity.magnitude / FastAnimationSpeed);
+
+		_animator.SetLayerWeight(1,
+			Mathf.SmoothDamp(_animator.GetLayerWeight(1), _animator.GetFloat("Slow Speed"), ref _animationDampReference, .2f));
+
+		switch (_soldierMode)
 		{
-			Animate.SetLayerWeight(3, Mathf.SmoothDamp(Animate.GetLayerWeight(3), 1, ref DeathTransition, .2f));
+			//When The Soldier Finds The Player, Start Attacking
+			case SoldierMode.Patrol:
+				if (DetectObject(GameObject.FindWithTag("Player").transform.position))
+					SwitchMode(Attack(GameObject.FindWithTag("Player").transform));
+				break;
+
+			//When The Soldier Doesn't See The Player Anymore, Go To Its Last Known Position
+			case SoldierMode.Attack:
+				if (!DetectObject(GameObject.FindWithTag("Player").transform.position))
+					SwitchMode(Patrol(GameObject.FindWithTag("Player").transform));
+				break;
 		}
 	}
 
-	private void SoldierUpdate()
-	{
-		if (CurrentMode == Modes.Attacking)
-		{
-			Agent.SetDestination(GameManager.Player.transform.position);
-			Agent.stoppingDistance = AttackDistance;
 
-			if (Vector3.Distance(transform.position, GameManager.Player.transform.position) < AttackDistance + 1)
+	//This Is Responsible For The Guard Patrolling The Area, It Goes To Its Dedicated Waypoint & Stays There For 1 Second
+	private IEnumerator Patrol(Transform initialWaypoint)
+	{
+		_soldierMode = SoldierMode.Patrol;
+		_agent.SetDestination(initialWaypoint.position);
+
+		ChangeSpeed(_patrolSpeed);
+
+		while (true)
+		{
+			//Here We Iterate Over Every Waypoint, The Soldier Will Then Stay There For 1 Second And Then Proceed To The Next Waypoint
+			foreach (Transform waypoint in _waypoints)
 			{
-				if (FireCoroutine == null)
-				{
-					StartCoroutine(Muzzle());
-					FireCoroutine = StartCoroutine(Fire());
-				}
-					
+				yield return new WaitUntil(() => HasArrived(_agent.destination));
+				yield return new WaitForSeconds(1);
 
-				Vector3 LookPosition = GameManager.Player.transform.position - transform.position;
-				LookPosition.y = 0;
+				_agent.SetDestination(waypoint.position);
+			}			
 
-				Quaternion Rotation = Quaternion.LookRotation(LookPosition);
-				transform.rotation = Quaternion.Slerp(transform.rotation, Rotation, Time.deltaTime * 4);
-			}
-				
+			//We Yield Here To Avoid Crashing Unity
+			yield return null;
 		}
-			
-		else if (Agent.pathStatus == NavMeshPathStatus.PathComplete && Agent.remainingDistance == 0 && CurrentMode != Modes.Staying)
-			StartCoroutine(GuardPosition(4));
-
-		Animate.SetFloat("Walk Speed", Agent.velocity.magnitude / WalkAnimationSpeed);
-		Animate.SetFloat("Run Speed", Agent.velocity.magnitude / RunAnimationSpeed);
-		Animate.SetLayerWeight(1, Mathf.SmoothDamp(Animate.GetLayerWeight(1), CurrentMode == Modes.Patrolling ? Animate.GetFloat("Walk Speed") : Animate.GetFloat("Run Speed"), ref SmoothWeight, .2f));
-
-		Agent.speed = CurrentMode == Modes.Patrolling ? PatrollingSpeed : AttackingSpeed;
-		Agent.acceleration = Agent.speed;
-
-
 	}
 
-	public void InvestigateDistraction(Vector3 Position)
+	//The Enemy's Main Goal Here Is To Run Towards The Player
+	private IEnumerator Attack(Transform waypoint)
 	{
-		Agent.SetDestination(Position);
-		CurrentMode = Modes.Searching;
-		VoiceSource.clip = Searching;
-		VoiceSource.Play();
-	}
+		_soldierMode = SoldierMode.Attack;
+		ChangeSpeed(_attackSpeed);
 
-	private IEnumerator GuardPosition(float Time)
-	{
-		CurrentMode = Modes.Staying;
-		VoiceSource.clip = Staying;
-		VoiceSource.Play();
-
-		Animate.SetTrigger("Stop");
-
-		yield return new WaitForSeconds(Time);
-
-		CurrentWaypointIndex++;
-
-		if (CurrentWaypointIndex >= Waypoint.Count)
-			CurrentWaypointIndex = 0;
-
-		VoiceSource.clip = Patrolling;
-		VoiceSource.Play();
-		Agent.SetDestination(Waypoint[CurrentWaypointIndex].position);
-
-		CurrentMode = Modes.Patrolling;
-		Animate.SetTrigger("Walk");
-	}
-
-	public void Damage(byte Amount)
-	{
-		if (Health == 0)
+		while (true)
 		{
-			if (DeathCoroutine == null)
-				DeathCoroutine = StartCoroutine(CleanObject());
+			_agent.SetDestination(waypoint.position);
+			yield return null;
 		}
 
-			
-		else
+		yield return null;
+	}
+
+	//This Is A Helper Function Used To Make Things More Readable
+	private bool HasArrived(Vector3 waypoint)
+	{
+		return _agent.pathStatus == NavMeshPathStatus.PathComplete && _agent.remainingDistance == 0 &&
+			Vector3.Distance(transform.position, waypoint) < .1f;
+	}
+
+	//The Direction Is Calculated Between The Enemy And The Player, Then The Angle Is Calculated Between The Forward Direction & The Direction
+	//If The Angle Is Less Than 30 Then The Player is In Range
+	private bool DetectObject(Vector3 position)
+	{
+		if (!Physics.Linecast(transform.position, position))
 		{
-			Health -= Amount;
-			Animate.SetTrigger("Hit");
+			Vector3 direction = (position - transform.position).normalized;
+			return Vector3.Angle(transform.forward, direction) < 30;
 		}
+
+		else return false;
 	}
 
-	private IEnumerator Fire()
+	//This Will Stop The Coroutine To Ensure That No Previous Modes Will Conflict With The Current Mode
+	private void SwitchMode(IEnumerator mode)
 	{
-		Animate.SetTrigger("Fire");
-		Source.Play();
-
-		for (byte I = 0; I < BulletsEveryShot; I++)
-		{
-			Vector3 Spread = new Vector3(Random.Range(-BulletSpread, BulletSpread), Random.Range(-BulletSpread, BulletSpread), Random.Range(-BulletSpread, BulletSpread));
-			Instantiate(BulletPrefab, transform.position + Vector3.up * 1.8f, transform.rotation * Quaternion.Euler(Spread));
-		}
-		
-
-		yield return new WaitForSeconds(TimeBetweenFire);
-
-		FireCoroutine = null;
+		StopCoroutine(_currentCoroutine);
+		_currentCoroutine = StartCoroutine(mode);
 	}
 
-	private IEnumerator Muzzle()
+	private void ChangeSpeed(float speed)
 	{
-		transform.GetChild(0).gameObject.SetActive(true);
-		yield return new WaitForSeconds(.04f);
-		transform.GetChild(0).gameObject.SetActive(false);
-	}
-
-	//This Will Basically Remove Any Component That Wouldn't Be Needed Anymore, Saving Memory
-	private IEnumerator CleanObject()
-	{
-		Animate.SetTrigger("Death");
-		VoiceSource.clip = Dying;
-		VoiceSource.Play();
-
-		Destroy(Agent);
-		Destroy(Source);
-		Destroy(GetComponent<AudioScaler>());
-		Destroy(GetComponent<Collider>());
-
-		yield return new WaitForSeconds(1);
-
-		Destroy(this);
+		_agent.speed = _patrolSpeed;
+		_agent.acceleration = _agent.speed / 2;
 	}
 }
