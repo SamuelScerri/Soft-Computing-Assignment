@@ -56,6 +56,8 @@ public class Soldier : MonoBehaviour
 		{
 			//When The Soldier Finds The Player, Start Attacking
 			case SoldierMode.Patrol:
+				_animator.SetTrigger("Walk");
+
 				if (DetectObject(GameObject.FindWithTag("Player").transform.position, 45))
 					SwitchMode(Attack(GameObject.FindWithTag("Player").transform));
 
@@ -79,6 +81,8 @@ public class Soldier : MonoBehaviour
 		_agent.SetDestination(initialWaypoint.position);
 
 		_agent.stoppingDistance = 0;
+		ChangeSpeed(_patrolSpeed);
+		
 
 		while (true)
 		{
@@ -87,9 +91,6 @@ public class Soldier : MonoBehaviour
 			{
 				yield return new WaitUntil(() => HasArrived(_agent.destination));
 				yield return new WaitForSeconds(1);
-
-				ChangeSpeed(_patrolSpeed);
-				_animator.SetTrigger("Walk");
 
 				_agent.SetDestination(waypoint.position);
 			}			
