@@ -48,7 +48,9 @@ public class Soldier : MonoBehaviour
 
 		_animator.SetLayerWeight(1,
 			Mathf.SmoothDamp(_animator.GetLayerWeight(1),
-				_soldierMode == SoldierMode.Patrol ? _animator.GetFloat("Slow Speed") : _animator.GetFloat("Fast Speed"), ref _animationDampReference, .4f));
+				_soldierMode == SoldierMode.Patrol ? _animator.GetFloat("Slow Speed") : _animator.GetFloat("Fast Speed"), ref _animationDampReference, .2f));
+
+		GetComponent<Footstep>().UpdateFootstep(_agent.velocity.magnitude);
 
 		switch (_soldierMode)
 		{
@@ -58,8 +60,8 @@ public class Soldier : MonoBehaviour
 
 				if (DetectObject(GameObject.FindWithTag("Player").transform.position, 45))
 				{
-					//Call The Soldiers To The Players Location
-					RequestSupport(transform.position);
+					//Call The Soldiers To The Player's Location
+					RequestSupport(GameObject.FindWithTag("Player").transform);
 					SwitchMode(Attack(GameObject.FindWithTag("Player").transform));
 				}
 
@@ -77,8 +79,8 @@ public class Soldier : MonoBehaviour
 			case SoldierMode.Attack:
 				_animator.SetTrigger("Run");
 
-				if (!DetectObject(GameObject.FindWithTag("Player").transform.position, 180))
-					SwitchMode(Patrol(GameObject.FindWithTag("Player").transform));
+				if (!DetectObject(GameObject.FindWithTag("Player").transform.position, 0))
+					SwitchMode(Search(GameObject.FindWithTag("Player").transform));
 				break;
 		}
 	}
@@ -129,49 +131,67 @@ public class Soldier : MonoBehaviour
 	}
 
 	//The Enemy Will Go To The Called Out Position & Guard The Place For 1 Second
-	public IEnumerator Search(Vector3 position)
+	public IEnumerator Search(Transform position)
+	{
+		_soldierMode = SoldierMode.Search;
+
+		//yield return new WaitForSeconds(2);
+		//GetComponent<SoldierCallout>().Acknowledge();
+		ChangeSpeed(_attackSpeed);
+		_agent.stoppingDistance = 2;
+
+		_agent.SetDestination(position.position);
+
+		while (true)
+		{
+			yield return new WaitUntil(() => HasArrived(_agent.destination));
+			yield return new WaitForSeconds(2);
+
+			GetComponent<SoldierCallout>().Clear();
+
+			yield return new WaitForSeconds(1);
+			SwitchMode(Patrol(_waypoints[0]));
+		}
+	}
+
+	public IEnumerator Acknowledge(Transform position)
 	{
 		_soldierMode = SoldierMode.Search;
 		_agent.ResetPath();
 
 		yield return new WaitForSeconds(2);
 		GetComponent<SoldierCallout>().Acknowledge();
-		
-		ChangeSpeed(_attackSpeed);
-		_agent.SetDestination(position);
 
-		while (true)
-		{
-			yield return new WaitUntil(() => HasArrived(_agent.destination));
-			yield return new WaitForSeconds(1);
-
-			GetComponent<SoldierCallout>().Clear();
-			SwitchMode(Patrol(_waypoints[0]));
-		}
+		SwitchMode(Search(position));
 	}
 
 	//This Is A Helper Function Used To Make Things More Readable
 	private bool HasArrived(Vector3 waypoint)
 	{
-		return _agent.pathStatus == NavMeshPathStatus.PathComplete && _agent.remainingDistance == 0 &&
-			Vector3.Distance(transform.position, waypoint) < _agent.stoppingDistance +.1f;
+		return _agent.pathStatus == NavMeshPathStatus.PathComplete &&
+			Vector3.Distance(transform.position, waypoint) < _agent.stoppingDistance * 2 + .1f;
 	}
 
 	//The Direction Is Calculated Between The Enemy And The Player, Then The Angle Is Calculated Between The Forward Direction & The Direction
 	//If The Angle Is Less Than 30 Then The Player is In Range
 	private bool DetectObject(Vector3 position, float angle)
 	{
-		if (!Physics.Linecast(transform.position, position))
+		Debug.DrawLine(transform.position + Vector3.up * 2, position + Vector3.up * 2);
+
+		if (!Physics.Linecast(transform.position + Vector3.up * 2, position + Vector3.up * 2))
 		{
-			Vector3 direction = (position - transform.position).normalized;
-			return Vector3.Angle(transform.forward, direction) < angle;
+			Vector3 direction = ((position + Vector3.up * 2) - (transform.position + Vector3.up * 2)).normalized;
+
+			if (angle == 0)
+				return true;
+			else return Vector3.Angle(transform.forward, direction) < angle;
 		}
 
 		else return false;
 	}
 
 	//The Soldier Will Call Out Their Allies And Make Them Go To The Player's Last Position
-	private void RequestSupport(Vector3 position)
+	private void RequestSupport(Transform position)
 	{
 		_animator.SetTrigger("Wave");
 
@@ -181,7 +201,7 @@ public class Soldier : MonoBehaviour
 		foreach (GameObject soldier in soldiers)
 		{
 			Soldier behaviour = soldier.GetComponent<Soldier>();
-			behaviour.SwitchMode(behaviour.Search(position));
+			behaviour.SwitchMode(behaviour.Acknowledge(position));
 		}
 	}
 

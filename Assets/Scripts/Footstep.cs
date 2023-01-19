@@ -6,60 +6,42 @@ using UnityEngine;
 public class FootstepNoise
 {
 	public int GroundLayer;
-	public List<AudioClip> Sounds;
+	public List<AudioClip> _sources;
 
-	public FootstepNoise(int GroundLayer, List<AudioClip> Sounds)
+	public FootstepNoise(int groundLayer, List<AudioClip> _sources)
 	{
-		this.GroundLayer = GroundLayer;
-		this.Sounds = Sounds;
+		this.GroundLayer = groundLayer;
+		this._sources = _sources;
 	}
 }
 
 public class Footstep : MonoBehaviour
 {
-	private AudioSource Sound;
+	private AudioSource _source;
 
 	[SerializeField]
-	private List<FootstepNoise> Footsteps;
-	private FootstepNoise CurrentFootstepNoise;
+	private List<FootstepNoise> _footstepNoises;
+	private FootstepNoise _currentFootstepNoise;
 
-	private Coroutine FootstepCoroutine;
-	private CharacterController CC;
-
-	private Player PlayerInformation;
-
-	private float StepTime;
+	private float _stepTime;
 
 	private void Start()
 	{
-		PlayerInformation = GetComponent<Player>();
-		CC = GetComponent<CharacterController>();
-		Sound = GetComponent<AudioSource>();
-
-		CurrentFootstepNoise = Footsteps[0];
+		_source = GetComponents<AudioSource>()[1];
+		_currentFootstepNoise = _footstepNoises[0];
 	}
 
-	private void Update()
+	public void UpdateFootstep(float speed)
 	{
-		if (CC.isGrounded && StepTime <= 0) Step();
-		else if (!CC.isGrounded) StepTime = -1;
-		
-		if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
-			StepTime = Mathf.MoveTowards(StepTime, 0, PlayerInformation.GetCurrentSpeed().magnitude * Time.unscaledDeltaTime);
+		_stepTime -= speed * Time.deltaTime;
+		if (_stepTime <= 0) Step();
 	}
 
 	private void Step()
 	{
-		Sound.clip = CurrentFootstepNoise.Sounds[Random.Range(0, CurrentFootstepNoise.Sounds.Count)];
+		_source.clip = _currentFootstepNoise._sources[Random.Range(0, _currentFootstepNoise._sources.Count)];
 
-		Sound.Play();
-		StepTime = 1;
-	}
-
-	private void OnControllerColliderHit(ControllerColliderHit Information)
-	{
-		foreach(FootstepNoise F in Footsteps)
-			if (F.GroundLayer == Information.gameObject.layer)
-				CurrentFootstepNoise = F;
+		_source.Play();
+		_stepTime = 1;
 	}
 }
