@@ -26,8 +26,6 @@ public class Soldier : MonoBehaviour
 	//Built-In Components
 	private NavMeshAgent _agent;
 	private Animator _animator;
-
-	private Coroutine _currentCoroutine;
 	private float _agentSpeed;
 
 	//This Is Used For Smoothing The Layer Weight
@@ -39,7 +37,7 @@ public class Soldier : MonoBehaviour
 		_animator = GetComponent<Animator>();
 		_agentSpeed = _agent.speed;
 
-		_currentCoroutine = StartCoroutine(Patrol(_waypoints[0]));
+		StartCoroutine(Patrol(_waypoints[0]));
 		ChangeSpeed(_patrolSpeed);
 	}
 
@@ -59,8 +57,20 @@ public class Soldier : MonoBehaviour
 				_animator.SetTrigger("Walk");
 
 				if (DetectObject(GameObject.FindWithTag("Player").transform.position, 45))
+				{
+					//Call The Soldiers To The Players Location
+					RequestSupport(transform.position);
 					SwitchMode(Attack(GameObject.FindWithTag("Player").transform));
+				}
 
+				break;
+
+			//Similar To Patrol Mode, But Won't Request Support
+			case SoldierMode.Search:
+				_animator.SetTrigger("Run");
+
+				if (DetectObject(GameObject.FindWithTag("Player").transform.position, 45))
+					SwitchMode(Attack(GameObject.FindWithTag("Player").transform));
 				break;
 
 			//When The Soldier Doesn't See The Player Anymore, Go To Its Last Known Position
@@ -83,20 +93,23 @@ public class Soldier : MonoBehaviour
 		_agent.stoppingDistance = 0;
 		ChangeSpeed(_patrolSpeed);
 		
-
 		while (true)
 		{
 			//Here We Iterate Over Every Waypoint, The Soldier Will Then Stay There For 1 Second And Then Proceed To The Next Waypoint
 			foreach (Transform waypoint in _waypoints)
 			{
-				yield return new WaitUntil(() => HasArrived(_agent.destination));
-				yield return new WaitForSeconds(1);
+				if (!HasArrived(_agent.destination))
+				{
+					yield return new WaitUntil(() => HasArrived(_agent.destination));
+					yield return new WaitForSeconds(1);
+					GetComponent<SoldierCallout>().Patrol();
+				}
 
-				_agent.SetDestination(waypoint.position);
+				_agent.SetDestination(waypoint.position);				
 			}			
 
 			//We Yield Here To Avoid Crashing Unity
-			yield return null;
+			yield return new WaitForSeconds(.1f);
 		}
 	}
 
@@ -111,17 +124,37 @@ public class Soldier : MonoBehaviour
 		while (true)
 		{
 			_agent.SetDestination(waypoint.position);
-			yield return null;
+			yield return new WaitForSeconds(.1f);
 		}
+	}
 
-		yield return null;
+	//The Enemy Will Go To The Called Out Position & Guard The Place For 1 Second
+	public IEnumerator Search(Vector3 position)
+	{
+		_soldierMode = SoldierMode.Search;
+		_agent.ResetPath();
+
+		yield return new WaitForSeconds(2);
+		GetComponent<SoldierCallout>().Acknowledge();
+		
+		ChangeSpeed(_attackSpeed);
+		_agent.SetDestination(position);
+
+		while (true)
+		{
+			yield return new WaitUntil(() => HasArrived(_agent.destination));
+			yield return new WaitForSeconds(1);
+
+			GetComponent<SoldierCallout>().Clear();
+			SwitchMode(Patrol(_waypoints[0]));
+		}
 	}
 
 	//This Is A Helper Function Used To Make Things More Readable
 	private bool HasArrived(Vector3 waypoint)
 	{
 		return _agent.pathStatus == NavMeshPathStatus.PathComplete && _agent.remainingDistance == 0 &&
-			Vector3.Distance(transform.position, waypoint) < .1f;
+			Vector3.Distance(transform.position, waypoint) < _agent.stoppingDistance +.1f;
 	}
 
 	//The Direction Is Calculated Between The Enemy And The Player, Then The Angle Is Calculated Between The Forward Direction & The Direction
@@ -137,11 +170,26 @@ public class Soldier : MonoBehaviour
 		else return false;
 	}
 
+	//The Soldier Will Call Out Their Allies And Make Them Go To The Player's Last Position
+	private void RequestSupport(Vector3 position)
+	{
+		_animator.SetTrigger("Wave");
+
+		GameObject[] soldiers = GameObject.FindGameObjectsWithTag("Soldier");
+		GetComponent<SoldierCallout>().Support();
+
+		foreach (GameObject soldier in soldiers)
+		{
+			Soldier behaviour = soldier.GetComponent<Soldier>();
+			behaviour.SwitchMode(behaviour.Search(position));
+		}
+	}
+
 	//This Will Stop The Coroutine To Ensure That No Previous Modes Will Conflict With The Current Mode
 	private void SwitchMode(IEnumerator mode)
 	{
-		StopCoroutine(_currentCoroutine);
-		_currentCoroutine = StartCoroutine(mode);
+		StopAllCoroutines();
+		StartCoroutine(mode);
 	}
 
 	private void ChangeSpeed(float speed)
