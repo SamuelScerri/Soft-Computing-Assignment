@@ -41,9 +41,11 @@ public class Player : MonoBehaviour
 		else _currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _walkSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.deltaTime);
 
 		_characterController.Move(_currentSpeed * Time.deltaTime);
+		GetComponent<Footstep>().UpdateFootstep(_characterController.velocity.magnitude);
 
 		GravityUpdate();
 		CrouchUpdate();
+
 
 		_previousPosition = transform.position;
 	}

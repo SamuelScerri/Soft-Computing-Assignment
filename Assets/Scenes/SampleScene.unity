@@ -747,9 +747,9 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 1207528693504d1489e0c2523356331a, type: 3}
-  m_PlayOnAwake: 0
-  m_Volume: 1
+  m_audioClip: {fileID: 8300000, guid: d59ae7a6137742a4ab5cd34196bc25a0, type: 3}
+  m_PlayOnAwake: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 1
   Mute: 0
@@ -2213,6 +2213,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Soldier
       objectReference: {fileID: 0}
+    - target: {fileID: 4910821079594701410, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5723351013391223000, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
       propertyPath: m_RootOrder
       value: 10
@@ -3470,6 +3474,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Soldier
       objectReference: {fileID: 0}
+    - target: {fileID: 4910821079594701410, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5723351013391223000, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
       propertyPath: m_RootOrder
       value: 9
@@ -4687,54 +4695,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _fallSpeed
-      value: 32
-      objectReference: {fileID: 0}
-    - target: {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _fastSpeed
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _slowSpeed
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _stairSnap
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _crouchSpeed
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _sensitivity
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _standHeight
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _acceleration
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _crouchHeight
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _jumpStrength
-      value: 12
-      objectReference: {fileID: 0}
-    - target: {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _cameraInterpolation
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _cameraInterpolationStrength
-      value: 0.1
-      objectReference: {fileID: 0}
     - target: {fileID: 5117732205055446099, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
       propertyPath: m_Name
       value: Player
@@ -4783,26 +4743,5 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6037362069865256308, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _runSpeed
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 6037362069865256308, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _stairSnap
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 6037362069865256308, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _walkSpeed
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6037362069865256308, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _standHeight
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 6037362069865256308, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
-      propertyPath: _crouchHeight
-      value: 1
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 2947461697269360861, guid: aee12bb44366e28468d95fb90a099f72, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: aee12bb44366e28468d95fb90a099f72, type: 3}

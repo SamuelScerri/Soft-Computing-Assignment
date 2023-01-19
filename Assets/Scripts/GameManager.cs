@@ -5,30 +5,33 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-	private static GameManager Singleton;
-
-	public static GameObject Player;
-	public static GameObject UIInstance;
+	public static GameManager Singleton;
+	public static bool Paused;
 
 	[SerializeField]
 	private GameObject PrefabUI;
 
 	private void Start()
 	{
-		if (Singleton)
+		if (Singleton != null)
 			Destroy(this.gameObject);
 		else
-			Initialize();
+			Singleton = this;
+
+		Cursor.lockState = Paused ? CursorLockMode.None : CursorLockMode.Locked;
 	}
 
-	private void Initialize()
+	private void Update()
 	{
-		Singleton = this;
-		UIInstance = Instantiate(PrefabUI) as GameObject;
+		if (Input.GetKeyDown(KeyCode.Escape))
+			GameManager.TogglePause();
 	}
 
-	public static void SetUIText(string NewText)
+	private static void TogglePause()
 	{
-		UIInstance.transform.GetChild(0).GetComponent<Text>().text = "Ammo: " + NewText;
+		Paused = Paused ? false : true;
+		Time.timeScale = Paused ? 0 : 1;
+
+		Cursor.lockState = Paused ? CursorLockMode.None : CursorLockMode.Locked;
 	}
 }
