@@ -174,7 +174,7 @@ public class Soldier : MonoBehaviour
 
 	//The Direction Is Calculated Between The Enemy And The Player, Then The Angle Is Calculated Between The Forward Direction & The Direction
 	//If The Angle Is Less Than 30 Then The Player is In Range
-	private bool DetectObject(Vector3 position, float angle)
+	public bool DetectObject(Vector3 position, float angle)
 	{
 		Debug.DrawLine(transform.position + Vector3.up * 2, position + Vector3.up * 2);
 
@@ -216,5 +216,10 @@ public class Soldier : MonoBehaviour
 	{
 		_agent.speed = speed;
 		_agent.acceleration = speed;
+	}
+
+	public SoldierMode GetSoldierMode()
+	{
+		return _soldierMode;
 	}
 }
