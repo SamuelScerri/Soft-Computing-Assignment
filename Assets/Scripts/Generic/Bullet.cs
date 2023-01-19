@@ -28,6 +28,11 @@ public class Bullet : MonoBehaviour
 	private void OnCollisionEnter(Collision collider)
 	{
 		if (collider.gameObject.tag == "Player")
+		{
+			GameManager.ShowDeathScreen();
 			collider.gameObject.GetComponent<HealthManager>().Kill();
+			Time.timeScale = 1;
+			Destroy(this.gameObject);
+		}
 	}
 }

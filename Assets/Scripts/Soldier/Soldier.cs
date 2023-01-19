@@ -61,7 +61,8 @@ public class Soldier : MonoBehaviour
 				if (DetectObject(GameObject.FindWithTag("Player").transform.position, 45))
 				{
 					//Call The Soldiers To The Player's Location
-					RequestSupport(GameObject.FindWithTag("Player").transform);
+					if (GameManager.DifficultyLevel != 1)
+						RequestSupport(GameObject.FindWithTag("Player").transform);
 					SwitchMode(Attack(GameObject.FindWithTag("Player").transform));
 				}
 
@@ -79,8 +80,9 @@ public class Soldier : MonoBehaviour
 			case SoldierMode.Attack:
 				_animator.SetTrigger("Run");
 
-				if (!DetectObject(GameObject.FindWithTag("Player").transform.position, 0))
-					SwitchMode(Search(GameObject.FindWithTag("Player").transform));
+				if (GameManager.DifficultyLevel != 3)
+					if (!DetectObject(GameObject.FindWithTag("Player").transform.position, 0))
+						SwitchMode(Search(GameObject.FindWithTag("Player").transform));
 				break;
 		}
 	}

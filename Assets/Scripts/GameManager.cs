@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
 	public static GameManager Singleton;
-	public static bool Paused;
+	public static byte DifficultyLevel = 2;
+
+	public bool Paused;
 
 	private void Start()
 	{
@@ -26,14 +29,26 @@ public class GameManager : MonoBehaviour
 
 	private static void TogglePause()
 	{
-		Paused = Paused ? false : true;
-		Time.timeScale = Paused ? 0 : 1;
+		Singleton.Paused = Singleton.Paused ? false : true;
+		Time.timeScale = Singleton.Paused ? 0 : 1;
 
-		Cursor.lockState = Paused ? CursorLockMode.None : CursorLockMode.Locked;
+		Cursor.lockState = Singleton.Paused ? CursorLockMode.None : CursorLockMode.Locked;
+
+		Singleton.transform.GetChild(4).gameObject.SetActive(Singleton.Paused ? true : false); 
 	}
 
 	public static void SetBulletTimeUI(float time)
 	{
 		Singleton.transform.GetChild(2).GetComponent<Text>().text = "Bullet Time: " + time.ToString();
+	}
+
+	public static void ShowDeathScreen()
+	{
+		Singleton.transform.GetChild(3).gameObject.SetActive(true);
+	}
+
+	public static void Restart()
+	{
+		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
 }
