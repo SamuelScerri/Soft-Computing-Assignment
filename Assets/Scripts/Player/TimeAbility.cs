@@ -27,7 +27,7 @@ public class TimeAbility : MonoBehaviour
 		if (_enabled)
 			_length -= Time.unscaledDeltaTime;
 		
-		if (_length <= 0 || Input.GetMouseButton(0))
+		if (_length <= 0)
 			DisableAbility();
 
 		GameManager.SetBulletTimeUI(Mathf.Clamp(_length, 0, Mathf.Infinity));

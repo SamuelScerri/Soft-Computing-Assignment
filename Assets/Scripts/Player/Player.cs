@@ -29,25 +29,28 @@ public class Player : MonoBehaviour
 
 	private void Update()
 	{
-		//This Ensures That More Velocity Will Only Be In A Certain Direction, This Means That If You Look Behind You Whilst Moving, You Won't Continue Moving Forward But Rather Backwards As You Will Still Be Slowing Down
-		Vector3 direction = (transform.forward * Input.GetAxisRaw("Vertical") +
-			transform.right* Input.GetAxisRaw("Horizontal")).normalized;
+		if (!GameManager.Singleton.Paused)
+		{
+			//This Ensures That More Velocity Will Only Be In A Certain Direction, This Means That If You Look Behind You Whilst Moving, You Won't Continue Moving Forward But Rather Backwards As You Will Still Be Slowing Down
+			Vector3 direction = (transform.forward * Input.GetAxisRaw("Vertical") +
+				transform.right* Input.GetAxisRaw("Horizontal")).normalized;
 
-		//Smooth Damp Will Ensure That The Acceleration Will Be Constant Across Different Framerates
-		if (_isCrouched)
-			_currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _crouchSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.unscaledDeltaTime);
-		else if (Input.GetKey(KeyCode.LeftShift) && _lastGrounded && !GetComponent<TimeAbility>().IsEnabled())
-			_currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _runSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.unscaledDeltaTime);
-		else _currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _walkSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.unscaledDeltaTime);
+			//Smooth Damp Will Ensure That The Acceleration Will Be Constant Across Different Framerates
+			if (_isCrouched)
+				_currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _crouchSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.unscaledDeltaTime);
+			else if (Input.GetKey(KeyCode.LeftShift) && _lastGrounded && !GetComponent<TimeAbility>().IsEnabled())
+				_currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _runSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.unscaledDeltaTime);
+			else _currentSpeed = Vector3.SmoothDamp(_currentSpeed, direction * _walkSpeed, ref _currentVelocity, _acceleration, Mathf.Infinity, Time.unscaledDeltaTime);
 
-		_characterController.Move(_currentSpeed * Time.unscaledDeltaTime);
-		GetComponent<Footstep>().UpdateFootstep(_characterController.velocity.magnitude);
+			_characterController.Move(_currentSpeed * Time.unscaledDeltaTime);
+			GetComponent<Footstep>().UpdateFootstep(_characterController.velocity.magnitude);
 
-		GravityUpdate();
-		CrouchUpdate();
+			GravityUpdate();
+			CrouchUpdate();
 
 
-		_previousPosition = transform.position;
+			_previousPosition = transform.position;
+		}
 	}
 
 	private void GravityUpdate()

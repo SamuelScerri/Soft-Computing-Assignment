@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
+using UnityEngine.EventSystems;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,10 +14,7 @@ public class GameManager : MonoBehaviour
 
 	private void Start()
 	{
-		if (Singleton != null)
-			Destroy(this.gameObject);
-		else
-			Singleton = this;
+		Singleton = this;
 
 		Cursor.lockState = Paused ? CursorLockMode.None : CursorLockMode.Locked;
 	}
@@ -25,6 +23,8 @@ public class GameManager : MonoBehaviour
 	{
 		if (Input.GetKeyDown(KeyCode.Escape))
 			GameManager.TogglePause();
+
+		EventSystem.current.SetSelectedGameObject(null);
 	}
 
 	private static void TogglePause()
@@ -49,6 +49,7 @@ public class GameManager : MonoBehaviour
 
 	public static void Restart()
 	{
+		Time.timeScale = 1;
 		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
 	}
 }
