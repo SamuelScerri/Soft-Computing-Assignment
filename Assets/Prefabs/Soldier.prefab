@@ -376,6 +376,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _waypoints:
   - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   _patrolSpeed: 2
   _attackSpeed: 4
 --- !u!114 &1841200084607537823

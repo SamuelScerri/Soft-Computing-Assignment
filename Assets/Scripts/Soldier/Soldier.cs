@@ -50,7 +50,7 @@ public class Soldier : MonoBehaviour
 			Mathf.SmoothDamp(_animator.GetLayerWeight(1),
 				_soldierMode == SoldierMode.Patrol ? _animator.GetFloat("Slow Speed") : _animator.GetFloat("Fast Speed"), ref _animationDampReference, .2f));
 
-		GetComponent<Footstep>().UpdateFootstep(_agent.velocity.magnitude);
+		GetComponent<Footstep>().UpdateFootstep(_soldierMode == SoldierMode.Patrol ? _animator.GetFloat("Slow Speed") * 1.5f : _animator.GetFloat("Slow Speed"));
 
 		switch (_soldierMode)
 		{
