@@ -32,10 +32,7 @@ public class PlayerCamera : MonoBehaviour
 			Camera.main.transform.localRotation = Quaternion.Euler(
 				Mathf.SmoothDampAngle(Camera.main.transform.eulerAngles.x, _cameraRotation.x, ref _cameraDampedRotation.x, .1f),
 				0,
-				Mathf.SmoothDampAngle(transform.GetChild(0).eulerAngles.z, _cameraRotation.z, ref _cameraDampedRotation.z, .1f));
-
-			transform.GetChild(0).localRotation = Quaternion.Euler(0,
-				0, Mathf.SmoothDampAngle(transform.GetChild(0).eulerAngles.z, _cameraRotation.z, ref _cameraDampedRotation.z, .1f));
+				Mathf.SmoothDampAngle(Camera.main.transform.eulerAngles.z, _cameraRotation.z, ref _cameraDampedRotation.z, .1f));
 
 			UpdateCamera();
 		}
@@ -49,6 +46,9 @@ public class PlayerCamera : MonoBehaviour
 		_cameraRotation = new Vector2(Mathf.Clamp(_cameraRotation.x, -89, 89), _cameraRotation.y);
 
 		_cameraPosition = Mathf.SmoothDamp(_cameraPosition, _characterController.height, ref _cameraDampedPosition, .1f);
-		Camera.main.transform.localPosition = Vector3.up * _cameraPosition;
+		//Camera.main.transform.localPosition = Camera.main.transform.localRotation * Vector3.up * _cameraPosition;
+
+		Camera.main.transform.localPosition =  (Camera.main.transform.localRotation * new Vector3(0, _cameraPosition, 0));
+		Camera.main.transform.localPosition = new Vector3(Camera.main.transform.localPosition.x, _cameraPosition, 0);
 	}
 }
