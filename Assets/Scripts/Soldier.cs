@@ -40,6 +40,7 @@ public class Soldier : MonoBehaviour
 		_agentSpeed = _agent.speed;
 
 		_currentCoroutine = StartCoroutine(Patrol(_waypoints[0]));
+		ChangeSpeed(_patrolSpeed);
 	}
 
 	private void Update()
@@ -48,19 +49,23 @@ public class Soldier : MonoBehaviour
 		_animator.SetFloat("Fast Speed", _agent.velocity.magnitude / FastAnimationSpeed);
 
 		_animator.SetLayerWeight(1,
-			Mathf.SmoothDamp(_animator.GetLayerWeight(1), _animator.GetFloat("Slow Speed"), ref _animationDampReference, .2f));
+			Mathf.SmoothDamp(_animator.GetLayerWeight(1),
+				_soldierMode == SoldierMode.Patrol ? _animator.GetFloat("Slow Speed") : _animator.GetFloat("Fast Speed"), ref _animationDampReference, .4f));
 
 		switch (_soldierMode)
 		{
 			//When The Soldier Finds The Player, Start Attacking
 			case SoldierMode.Patrol:
-				if (DetectObject(GameObject.FindWithTag("Player").transform.position))
+				if (DetectObject(GameObject.FindWithTag("Player").transform.position, 45))
 					SwitchMode(Attack(GameObject.FindWithTag("Player").transform));
+
 				break;
 
 			//When The Soldier Doesn't See The Player Anymore, Go To Its Last Known Position
 			case SoldierMode.Attack:
-				if (!DetectObject(GameObject.FindWithTag("Player").transform.position))
+				_animator.SetTrigger("Run");
+
+				if (!DetectObject(GameObject.FindWithTag("Player").transform.position, 180))
 					SwitchMode(Patrol(GameObject.FindWithTag("Player").transform));
 				break;
 		}
@@ -73,7 +78,7 @@ public class Soldier : MonoBehaviour
 		_soldierMode = SoldierMode.Patrol;
 		_agent.SetDestination(initialWaypoint.position);
 
-		ChangeSpeed(_patrolSpeed);
+		_agent.stoppingDistance = 0;
 
 		while (true)
 		{
@@ -82,6 +87,9 @@ public class Soldier : MonoBehaviour
 			{
 				yield return new WaitUntil(() => HasArrived(_agent.destination));
 				yield return new WaitForSeconds(1);
+
+				ChangeSpeed(_patrolSpeed);
+				_animator.SetTrigger("Walk");
 
 				_agent.SetDestination(waypoint.position);
 			}			
@@ -96,6 +104,8 @@ public class Soldier : MonoBehaviour
 	{
 		_soldierMode = SoldierMode.Attack;
 		ChangeSpeed(_attackSpeed);
+
+		_agent.stoppingDistance = 4;
 
 		while (true)
 		{
@@ -115,12 +125,12 @@ public class Soldier : MonoBehaviour
 
 	//The Direction Is Calculated Between The Enemy And The Player, Then The Angle Is Calculated Between The Forward Direction & The Direction
 	//If The Angle Is Less Than 30 Then The Player is In Range
-	private bool DetectObject(Vector3 position)
+	private bool DetectObject(Vector3 position, float angle)
 	{
 		if (!Physics.Linecast(transform.position, position))
 		{
 			Vector3 direction = (position - transform.position).normalized;
-			return Vector3.Angle(transform.forward, direction) < 30;
+			return Vector3.Angle(transform.forward, direction) < angle;
 		}
 
 		else return false;
@@ -135,7 +145,7 @@ public class Soldier : MonoBehaviour
 
 	private void ChangeSpeed(float speed)
 	{
-		_agent.speed = _patrolSpeed;
-		_agent.acceleration = _agent.speed / 2;
+		_agent.speed = speed;
+		_agent.acceleration = speed;
 	}
 }

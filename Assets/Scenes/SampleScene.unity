@@ -4546,8 +4546,16 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1841200084607537819, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: m_Radius
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1841200084607537819, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
       propertyPath: m_Acceleration
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1841200084607537819, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: m_StoppingDistance
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1841200084607537820, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
       propertyPath: _attackSpeed
