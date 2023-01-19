@@ -28,6 +28,7 @@ public class SoldierWeapon : MonoBehaviour
 		_source.clip = _weaponInformation.Sound;
 
 		transform.GetChild(3).GetChild(0).GetComponent<MeshFilter>().mesh = _weaponInformation.Model;
+		transform.GetChild(3).GetChild(0).Rotate(Vector3.down * _weaponInformation.Rotation);
 
 		StartCoroutine(Attack(GameObject.FindWithTag("Player").transform));
 	}

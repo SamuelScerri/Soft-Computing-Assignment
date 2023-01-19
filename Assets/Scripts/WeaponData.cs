@@ -8,6 +8,7 @@ public class WeaponData : ScriptableObject
 	public Mesh Model;
 	public AudioClip Sound;
 
+	public float Rotation;
 	public bool Automatic;
 	public byte BulletsAmount;
 	public float Delay, Spread;
