@@ -27,6 +27,8 @@ public class SoldierWeapon : MonoBehaviour
 		_source = GetComponents<AudioSource>()[2];
 		_source.clip = _weaponInformation.Sound;
 
+		transform.GetChild(3).GetChild(0).GetComponent<MeshFilter>().mesh = _weaponInformation.Model;
+
 		StartCoroutine(Attack(GameObject.FindWithTag("Player").transform));
 	}
 
