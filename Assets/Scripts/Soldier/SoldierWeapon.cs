@@ -36,7 +36,7 @@ public class SoldierWeapon : MonoBehaviour
 	{
 		desiredRotation = Quaternion.LookRotation(player.position - transform.position).eulerAngles.y;
 		transform.eulerAngles = new Vector2(transform.eulerAngles.x,
-			Mathf.SmoothDamp(transform.eulerAngles.y, desiredRotation, ref smoothRotation, 1));
+			Mathf.SmoothDamp(transform.eulerAngles.y, desiredRotation, ref smoothRotation, .4f));
 	}
 
 	private IEnumerator Attack(Transform player)

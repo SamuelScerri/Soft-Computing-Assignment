@@ -105,4 +105,9 @@ public class Player : MonoBehaviour
 
 		_characterController.center = Vector2.up * _characterController.height / 2;
 	}
+
+	public float GetVelocity()
+	{
+		return _currentSpeed.magnitude;
+	}
 }

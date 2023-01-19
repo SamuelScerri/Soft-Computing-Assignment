@@ -8,6 +8,7 @@ public class PlayerCamera : MonoBehaviour
 	private float _cameraSensitivity, _cameraMaxSpeed;
 	private Vector3 _cameraRotation, _cameraDampedRotation;
 	private float _cameraPosition, _cameraDampedPosition;
+	private float _cameraBob, _cameraBobSmooth, _cameraBobDamped;
 
 	private CharacterController _characterController;
 
@@ -34,6 +35,18 @@ public class PlayerCamera : MonoBehaviour
 				0,
 				Mathf.SmoothDampAngle(Camera.main.transform.eulerAngles.z, _cameraRotation.z, ref _cameraDampedRotation.z, .1f));
 
+			//Camera Bobbing
+			if (Input.GetAxisRaw("Horizontal") != 0 || Input.GetAxisRaw("Vertical") != 0)
+			{
+				if (_cameraBob >= 3.14159f * 2)
+					_cameraBob -= 3.14159f * 2;
+				_cameraBob += Time.deltaTime * GetComponent<Player>().GetVelocity() * 4;
+
+				_cameraBobDamped = 0;
+			}
+
+			else _cameraBob = Mathf.SmoothDampAngle(_cameraBob, 3.14159f * 2, ref _cameraBobDamped, .4f);
+
 			UpdateCamera();
 		}
 	}
@@ -49,6 +62,7 @@ public class PlayerCamera : MonoBehaviour
 		//Camera.main.transform.localPosition = Camera.main.transform.localRotation * Vector3.up * _cameraPosition;
 
 		Camera.main.transform.localPosition =  (Camera.main.transform.localRotation * new Vector3(0, _cameraPosition, 0));
-		Camera.main.transform.localPosition = new Vector3(Camera.main.transform.localPosition.x, _cameraPosition, 0);
+		Camera.main.transform.localPosition = new Vector3(Camera.main.transform.localPosition.x, _cameraPosition +
+			Mathf.Sin(_cameraBob) * .05f, 0);
 	}
 }
