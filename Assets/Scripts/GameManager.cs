@@ -19,6 +19,12 @@ public class GameManager : MonoBehaviour
 		Cursor.lockState = Paused ? CursorLockMode.None : CursorLockMode.Locked;
 	}
 
+	public void QuitGame()
+	{
+		SceneManager.LoadScene(0);
+		Time.timeScale = 1;
+	}
+
 	private void Update()
 	{
 		if (Input.GetKeyDown(KeyCode.Escape))
