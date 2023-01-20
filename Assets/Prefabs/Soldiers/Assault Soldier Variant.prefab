@@ -25,7 +25,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4910821079594701410, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
       propertyPath: m_Name
-      value: Assault Soldier
+      value: Assault Soldier Variant
       objectReference: {fileID: 0}
     - target: {fileID: 4910821079594701410, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
       propertyPath: m_IsActive
@@ -74,6 +74,46 @@ PrefabInstance:
     - target: {fileID: 5723351013391223000, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541367047285697061, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: InitialModule.startSizeY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541367047285697061, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: InitialModule.startSizeZ.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541367047285697063, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: InitialModule.startSizeY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541367047285697063, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: InitialModule.startSizeZ.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541367047285697065, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: EmissionModule.enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541367047285697067, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: InitialModule.startSizeY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541367047285697067, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: InitialModule.startSizeZ.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541367047285697069, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: InitialModule.startSizeY.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541367047285697069, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: InitialModule.startSizeZ.minMaxState
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6541367047300281161, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7ce79a77db18e4f4cb39ed88a2a74ea0, type: 3}

@@ -8,7 +8,7 @@ public class SoldierText : MonoBehaviour
 
 	private void Start()
 	{
-		_textMesh = transform.GetChild(1).GetComponent<TextMesh>();
+		_textMesh = transform.GetChild(0).GetComponent<TextMesh>();
 	}
 
 	private void Update()

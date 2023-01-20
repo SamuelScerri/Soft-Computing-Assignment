@@ -27,10 +27,11 @@ public class SoldierWeapon : MonoBehaviour
 		_source = GetComponents<AudioSource>()[2];
 		_source.clip = _weaponInformation.Sound;
 
-		transform.GetChild(3).GetChild(0).GetComponent<MeshFilter>().mesh = _weaponInformation.Model;
-		transform.GetChild(3).GetChild(0).Rotate(Vector3.down * _weaponInformation.Rotation);
+		transform.GetChild(2).GetChild(0).GetComponent<MeshFilter>().mesh = _weaponInformation.Model;
+		transform.GetChild(2).GetChild(0).Rotate(Vector3.down * _weaponInformation.Rotation);
 
 		StartCoroutine(Attack(GameObject.FindWithTag("Player").transform));
+		transform.GetChild(2).GetChild(0).GetChild(0).gameObject.SetActive(false);
 	}
 
 	private void Update()
@@ -61,16 +62,16 @@ public class SoldierWeapon : MonoBehaviour
 						float spreadZ = Random.Range(-_weaponInformation.Spread, _weaponInformation.Spread);
 
 						GameObject bullet = Instantiate(_bulletPrefab, transform.position + Vector3.up * 2, transform.rotation) as GameObject;
-
 						bullet.transform.Rotate(new Vector3(spreadX, spreadY, spreadZ));
 					}
 
-					transform.GetChild(0).gameObject.SetActive(true);
+					transform.GetChild(2).GetChild(0).GetChild(0).gameObject.SetActive(true);
 					_animator.SetTrigger("Fire");
 					_source.Play();
 
-					yield return new WaitForSeconds(.01f);
-					transform.GetChild(0).gameObject.SetActive(false);
+					yield return new WaitForSeconds(.1f);
+					//transform.GetChild(2).GetChild(0).GetChild(0).gameObject.SetActive(false);
+					transform.GetChild(2).GetChild(0).GetChild(0).gameObject.SetActive(false);
 				}
 
 				yield return new WaitForSeconds(_weaponInformation.Delay - .01f);
