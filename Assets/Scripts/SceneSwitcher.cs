@@ -14,4 +14,22 @@ public class SceneSwitcher : MonoBehaviour
 	{
 		SceneManager.LoadScene(1);
 	}
+
+	public void EasyDifficulty()
+	{
+		GameManager.DifficultyLevel = 1;
+		SceneManager.LoadScene(2);
+	}
+
+	public void MediumDifficulty()
+	{
+		GameManager.DifficultyLevel = 2;
+		SceneManager.LoadScene(2);
+	}
+
+	public void HardDifficulty()
+	{
+		GameManager.DifficultyLevel = 3;
+		SceneManager.LoadScene(2);
+	}
 }
