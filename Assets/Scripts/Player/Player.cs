@@ -92,7 +92,7 @@ public class Player : MonoBehaviour
 	{
 		if (_lastGrounded)
 		{
-			if (Input.GetKey(KeyCode.LeftControl) ||
+			if (/*Input.GetKey(KeyCode.LeftControl) ||*/
 				Physics.CapsuleCast(transform.position + Vector3.up * _characterController.stepOffset, transform.position + Vector3.up * _characterController.stepOffset, _characterController.radius, Vector3.up, _standHeight - _characterController.stepOffset + _characterController.skinWidth))
 			{
 				_characterController.height = _crouchHeight;
