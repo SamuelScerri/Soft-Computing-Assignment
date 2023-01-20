@@ -12,3 +12,4 @@ The assets used for this game can be found below:
   - https://assetstore.unity.com/packages/audio/sound-fx/voices/german-soldier-voiceover-files-15527
   - https://assetstore.unity.com/packages/audio/sound-fx/weapons/post-apocalypse-guns-demo-33515
   - https://opengameart.org/content/chaingun-pistol-rifle-shotgun-shots
+  - https://assetstore.unity.com/packages/3d/props/exterior/yughues-free-concrete-barriers-13248
