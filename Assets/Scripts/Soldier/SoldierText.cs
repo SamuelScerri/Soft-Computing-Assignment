@@ -36,6 +36,6 @@ public class SoldierText : MonoBehaviour
 				break;
 		}
 
-		transform.GetChild(1).transform.rotation = GameObject.FindWithTag("Player").transform.rotation;
+		transform.GetChild(0).transform.rotation = GameObject.FindWithTag("Player").transform.rotation;
 	}
 }

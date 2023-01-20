@@ -75,10 +75,10 @@ public class SoldierWeapon : MonoBehaviour
 				}
 
 				yield return new WaitForSeconds(_weaponInformation.Delay - .01f);
-				transform.GetChild(0).gameObject.SetActive(false);
+				transform.GetChild(2).GetChild(0).GetChild(0).gameObject.SetActive(false);
 			}
 
-			transform.GetChild(0).gameObject.SetActive(false);
+			transform.GetChild(2).GetChild(0).GetChild(0).gameObject.SetActive(false);
 
 			yield return null;
 		}
